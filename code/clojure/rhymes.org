@@ -1,0 +1,1206 @@
+#+TITLE: Instructional Exercise: A Rhyming Dictionary in Clojure
+#+AUTHOR: Paul Ford <ford@ftrain.com>, based on code by Jack Rusher <jack@rusher.com>
+
+[[http://upload.wikimedia.org/wikipedia/commons/7/74/Pieter_Bruegel_the_Elder-_Big_Fish_Eat_Little_Fish.JPG]]
+Diagram: LISP Internals
+
+** What Is this document?
+So let's say we want to create a thyming dictionary in Clojure. Not
+so much a rhyming dictionary application---although you /could/
+create such a thing---but a data structure that contains
+pronunciation data and which we could use in any program.
+
+[[http://rhetoricaldevice.com][Jack Rusher]], a good friend and computer scientist, put up this code
+here...
+ 
+https://gist.github.com/jackrusher/8640437
+
+...to demonstrate some interesting aspects of Clojure. Then he
+encouraged his friends to figure it out. I'm going to study this
+code and learn as I go. 
+
+The structure of this document (and thus a template for future
+documents of this sort) is:
+
+- Introduction
+- The plain old code
+- What data are we dealing with?
+- What are we going to do to deal with that data?
+- Let's apply what we've learned!
+- Notes and findings
+
+** What Is the Code? 
+This code works with a file downloaded from...
+
+http://svn.code.sf.net/p/cmusphinx/code/trunk/cmudict/cmudict.0.7a
+
+...and renamed to cmudict.txt.
+
+#+BEGIN_SRC clojure
+  (def rhyme-txt
+    (map #(string/split % #"[ ]+") 
+       (string/split-lines (slurp "cmudict.txt"))))
+   
+  (def word-to-rhyme
+    (reduce (fn [m [word & rhyme]]
+              (assoc m
+                (string/lower-case word)
+                (mapv #(keyword 
+                         (string/replace %1 #"[0-9]" "")) (reverse rhyme))))
+            {} rhyme-txt))
+   
+  (def rhyme-to-word
+    (reduce (fn [m [word rhyme]] 
+       (assoc-in m rhyme { :terminate word })) {} word-to-rhyme))
+   
+  (defn get-deepest-values [k]
+    (if (string? k) [k] (mapcat get-deepest-values (vals k))))
+   
+  (get-deepest-values (get-in rhyme-to-word 
+                       (take 5 (word-to-rhyme "connection"))))
+   
+  ;; => ("erection" "direction" "correction" "collection" "inflection"
+  ;; "preelection" "circumspection" "introspection" "imperfection"
+  ;; "perfection" "midsection" "transection" "connection"
+  ;; "protection")
+   
+  (def byron-bigrams [["soul" "wears"] ["light" "of"] ["moon" "be"]
+                      ["outwears" "its"] ["the" "soul"]
+                      ["night" "though"] ["heart" "must"]
+                      ["out" "the"] ["be" "still"] ["love" "itself"]
+                      ["the" "light"] ["pause" "to"] ["yet" "we"]
+                      ["for" "loving"] ["day" "returns"]
+                      ["the" "night"] ["too" "soon"] ["for" "the"]
+                      ["a" "roving"] ["will" "go"] ["loving" "and"]
+                      ["sword" "outwears"] ["to" "breathe"]
+                      ["breast" "and"] ["still" "as"] ["so" "late"]
+                      ["the" "day"] ["was" "made"] ["the" "sword"]
+                      ["more" "a"] ["soon" "yet"] ["must" "pause"]
+                      ["roving" "by"] ["the" "moon"] ["returns" "too"]
+                      ["itself" "have"] ["night" "was"] ["into" "the"]
+                      ["we" "will"] ["breathe" "and"] ["sheath" "and"]
+                      ["so" "we"] ["roving" "so"] ["no" "more"]
+                      ["made" "for"] ["the" "heart"] ["though" "the"]
+                      ["go" "no"] ["late" "into"] ["wears" "out"]
+                      ["and" "the"] ["of" "the"] ["by" "the"]
+                      ["and" "love"] ["the" "breast"] ["heart" "be"]
+                      ["as" "loving"] ["its" "sheath"]])
+   
+  (group-by (comp (partial take 2) word-to-rhyme last) byron-bigrams)
+   
+  ;; {(:L :IH) [["be" "still"] ["we" "will"]], () [["sword"
+  ;;  "outwears"]], (:N :UW) [["too" "soon"] ["the" "moon"]], (:NG
+  ;;  :IH) [["for" "loving"] ["a" "roving"] ["as" "loving"]], (:OW :S)
+  ;;  [["roving" "so"]], (:OW :DH) [["night" "though"]], (:IY :W)
+  ;;  [["yet" "we"] ["so" "we"]], (:T :S) [["heart" "must"] ["the"
+  ;;  "breast"]], (:D :EY) [["was" "made"]], (:T :AY) [["the" "light"]
+  ;;  ["the" "night"]], (:T :R) [["the" "heart"]], (:OW :N) [["go"
+  ;;  "no"]], (:T :EH) [["soon" "yet"]], (:EY) [["more" "a"]], (:Z :R)
+  ;;  [["soul" "wears"]], (:R :AO) [["no" "more"] ["made" "for"]], (:Z
+  ;;  :AA) [["night" "was"]], (:AY :B) [["roving" "by"]], (:V :AH)
+  ;;  [["light" "of"] ["and" "love"]], (:Z :N) [["day" "returns"]],
+  ;;  (:V :AE) [["itself" "have"]], (:D :R) [["the" "sword"]], (:Z
+  ;;  :AE) [["still" "as"]], (:OW :G) [["will" "go"]], (:TH :IY)
+  ;;  [["its" "sheath"]], (:F :L) [["love" "itself"]], (:D :N)
+  ;;  [["loving" "and"] ["breast" "and"] ["breathe" "and"] ["sheath"
+  ;;  "and"]], (:Z :AO) [["must" "pause"]], (:T :AW) [["wears"
+  ;;  "out"]], (:IY :B) [["moon" "be"] ["heart" "be"]], (:DH :IY)
+  ;;  [["to" "breathe"]], (:UW :T) [["pause" "to"] ["returns" "too"]
+  ;;  ["late" "into"]], (:T :EY) [["so" "late"]], (:AH :DH) [["out"
+  ;;  "the"] ["for" "the"] ["into" "the"] ["though" "the"] ["and"
+  ;;  "the"] ["of" "the"] ["by" "the"]], (:L :OW) [["the" "soul"]],
+  ;;  (:S :T) [["outwears" "its"]], (:EY :D) [["the" "day"]]}
+  
+#+END_SRC
+
+** What Is the Data?
+First I put it in a namespace.
+
+#+BEGIN_SRC clojure
+(ns unscroll.rhyme
+  (:require 
+    [clojure.string :as string]))
+#+END_SRC
+
+So that I can mess with it inside my current environment in
+emacs.
+
+Here is the first function.
+
+#+BEGIN_SRC clojure
+(def rhyme-txt
+  (map #(string/split % #"[ ]+")
+    (string/split-lines
+      (slurp "data/cmudict.txt"))))
+#+END_SRC
+
+So this presumes a file called cmudict.txt, the CMU pronunciation
+dictionary. Which is sort of an old standby for word nerds, like
+WordNet too, from back in the day before everything was free and
+a pronunciation dictionary in digital form felt like an almost
+unbearably large gift from the Gods.
+
+The format of the dictionary is such:
+
+#+BEGIN_SRC
+   ABDOMEN  AE0 B D OW1 M AH0 N
+#+END_SRC
+
+i.e. something like
+
+#+BEGIN_BLOCKQUOTE
+    WORD[SPACE]PHONEME_1[SPACE]PHONEME_2[SPACE]...PHONEME_N[NEWLINE]
+#+END_BLOCKQUOTE
+
+
+So we (slurp) in the file, split the lines by newlines, and then
+split on space.
+
+Gotta love (slurp); one thing it took me a while to figure out
+the other day is that slurp starts looking for files at the top
+level of the Clojure project. Where the source files are means
+nothing to Clojure (because they means nothing to the JVM); it's
+the project that sets the path. Just putting this here to save
+someone else the 20 minutes.
+
+Anyway now that we've done that we can say:
+(take 3 (drop 1010 rhyme-txt))
+
+(Okay so we're not getting rid of comments in the dictionary
+source or anything when we do this, it's fast-and-dirty. So for
+purposes of the example we want to fast-forward past a bunch of
+comments and miscellany to get a clear example, so start around
+item 1010)
+
+And we'd see
+
+#+BEGIN_SRC clojure
+     (["ACTUARY" "AE1" "K" "CH" "UW0" "EH1" "R" "IY2"]
+      ["ACTUATE" "AE1" "K" "CH" "UW2" "EY1" "T"]
+      ["ACTUATOR" "AE1" "K" "T" "Y" "UW0" "EY2" "T" "ER0"])
+#+END_SRC
+
+   
+So now we're dealing with a list () of vectors [] where the first
+value is a string representing word and the rest are strings
+representing phonemes.
+
+** What Functions Operate on the Data?
+There's a lot going on with this one as there always is with
+Clojure code. Let's see how it gets called first:
+
+#+BEGIN_SRC clojure
+    (get-deepest-values (get-in rhyme-to-word (take 3
+    (word-to-rhyme "connection"))))
+#+END_SRC
+
+
+Which could probably be a function of its own called (rhyme).
+Although I've noticed Jack doesn't really care much whether
+something is a function or a variable, it's like it DOESN'T EVEN
+MATTER. Hmm.
+
+Anyway, we're going to give this function, (word-to-rhyme) a word
+and get something back.
+
+
+#+BEGIN_SRC clojure
+    (word-to-rhyme "connection")
+#+END_SRC
+
+
+and we get
+
+#+BEGIN_SRC clojure
+    [:N :AH :SH :K :EH :N :AH :K]
+#+END_SRC
+
+
+which is the reverse order of phonemes. Which makes sense, we're
+building a rhyming dictionary, gonna go end to beginning in terms
+of phonemes.
+
+Going to add a crazy amount of indenting here so I can see the
+levels more clearly as a n00b.
+
+#+BEGIN_SRC clojure
+(def word-to-rhyme
+  (reduce (fn [m [word & rhyme]]
+            (assoc m
+              (string/lower-case word)
+              (mapv
+                #(keyword
+                   (string/replace %1 #"[0-9]" ""))
+                (reverse rhyme))))
+    {} rhyme-txt))
+#+END_SRC
+
+
+This is a funny one because as I mess with the parens my java
+keeps running out of heap space. So it's clearly doing a lot,
+like loading the whole CMU dictionary into memory. This is
+something that seems to happen when you mix in-buffer evaluation
+with lazy evaluation--occasionally you'll just blow up your
+session because you put something in the wrong place and called
+it a billion times instead of 100.
+
+The super hot LISPY action in there is
+
+
+#+BEGIN_BLOCKQUOTE
+    (reduce function = [that function] 
+                 val = [an empty map {}]
+                coll = [rhyme-txt, our list of vectors])
+#+END_BLOCKQUOTE
+
+Clojure docs are kind of a bear. For reduce, they say "If val is
+supplied, returns the result of applying f to val and the first
+item in coll, then applying f to that result and the 2nd item,
+etc." Awesome. Although I will say that they are always accurate
+and if you read them ten or twenty times they start to make
+sense. (Plus the community is completely tutorial-mad, there's no
+shortage of ways to learn this language, although in my case
+having an old-school Comp Sci guy as a friend helps.)
+
+So what reduce does here is return the results applying that
+function in there to {} and the first item in the rhyme-text,
+then applies that to the second item, etc.
+
+In
+
+#+BEGIN_SRC clojure
+     [m [word & rhyme]]
+#+END_SRC
+
+
+it's going to be applied with values like:
+
+#+BEGIN_SRC clojure
+    [{} ["CONNECTION" K AH N EH K SH AH N ]]
+#+END_SRC
+
+
+That's interesting because we have the [word & rhyme]--the way
+that destructuring works, rhyme will catch all of the phonemes
+into a list; it's almost like the CMU people could predict this
+kind of programming would occur using their dictionary. Or that
+Clojure was designed to deal with data structures like those in
+the CMU dictionary. Or that programmers should be creating data
+structures like those in the CMU dictionary that are easy to
+comprehend and manipulate as lists. Who knows?
+
+Then we say:
+
+#+BEGIN_SRC clojure
+    (assoc map key val)
+#+END_SRC
+
+
+Or here:
+
+#+BEGIN_SRC clojure
+    (assoc {} "connection" ...)
+#+END_SRC
+
+
+And then a couple things happen on the way to passing THAT
+parameter.
+
+FIRST we reverse the rhyme (reverse rhyme) so
+
+#+BEGIN_SRC
+    K AH0 N EH1 K SH AH0 N
+#+END_SRC
+
+
+becomes
+
+#+BEGIN_SRC
+   AH0 SH K EH1 N AH0 K
+#+END_SRC
+
+
+SECOND we replace all the numbers with nothing (likely because we
+just don't need the data, can't remember why CMU uses numbers)
+
+we do that with a regular expression yielding
+
+#+BEGIN_SRC
+    N AH SH K EH N AH K
+#+END_SRC
+
+
+THIRD we run a mapv across that list of phonemes--that is, apply
+to each element and return a vector. And what we are applying is
+the "keyword" function which turns a string to a clojure keyword so
+we end up with a structure like:
+
+#+BEGIN_SRC clojure
+    {"connection" [:N :AH :SH :K :EH :N :AH :K]}
+#+END_SRC
+
+
+NOTE: I'm not sure WHY we're converting to keywords but they are
+prettier in general and make for better keywords in maps, and I'm
+assuming they actually are optimized as, like, keywords, so....
+
+Anyway, and then we repeat that (lazily, I guess, so in chunks of
+32 or whatever it is that Clojure does?) as needed until we've
+slurped up the whole file into a big map or what I still think of
+as an associative array.  Aaaand now we have a variable that
+defines a function that when given--
+
+Oh god, I SEE. I ACTUALLY SEE. This is a def instead of a
+function for a reason. It's a var that calls a function which
+returns a map, but in Clojure a map can operate as a function. So
+when I say:
+
+#+BEGIN_SRC clojure
+    (word-to-rhyme "connection")
+#+END_SRC
+
+
+I'm causing the interpreter to read the entirety of the
+dictionary into a map, and assigning that map to "word-to-rhyme"
+and then because I'm calling word-to-rhyme as the first item in a
+sexp, the interpreter evaluates it as a function and returns the
+phonemes that it has assoc'd to that word.
+
+Clojure is kind of dense.
+
+So I'm going to assume we're in similar territory here with this
+variable def.
+
+#+BEGIN_SRC clojure
+(def rhyme-to-word
+  (reduce
+    (fn [m [word rhyme]]
+      (assoc-in m rhyme { :terminate word }))
+    {}
+    word-to-rhyme))
+#+END_SRC
+
+
+Aand we are, KIND OF. Hmm. So in this case we take the map (now
+just a map) from word-to-rhyme and do another reduce, except the
+structure we're building up is going to be a trie (?) so we're
+going:
+
+
+#+BEGIN_SRC clojure
+     (assoc-in {} [:N :AH :SH :K :EH :N :AH :K] { :terminate
+     "connection" })
+#+END_SRC
+
+
+And as a result we're getting:
+
+
+#+BEGIN_SRC clojure
+    {:N {:AH {:SH {:K {:EH {:N {:AH {:K {:terminate
+    "connection"}}}}}}}}}
+#+END_SRC
+
+
+Great but that's one word. NOW Clojure hands that same map back
+to the reduce with ANOTHER word, and so on for thousands of
+words, building up a huge nested behemoth of a data structure.
+
+So we've passed assoc-in the phonemes for "connection"; we can
+now pass it "correction" and they should be all jammed up in a
+really nice way...
+
+
+#+BEGIN_SRC clojure
+    (assoc-in (assoc-in {} [:N :AH :SH :K :EH :N :AH :K] {
+      :terminate "connection" }) [:N :AH :SH :K :EH :ER :K]
+      {:terminate "correction"})
+#+END_SRC
+
+Okay, yes we end up with something that will let us take one
+word, look up the phonemes (in reverse order) and look for
+similar phonemes, then map those back to the words. That's what
+we have here, no doubt. Looks like this:
+
+#+BEGIN_SRC clojure
+    {:N {:AH {:SH {:K {:EH {:ER {:K {:terminate "correction"}}, :N
+    {:AH {:K {:terminate "connection"}}}}}}}}}
+#+END_SRC
+
+
+And since I can assoc-in I can get-in too and pull stuff out.
+
+Okay so on we go...
+
+#+BEGIN_SRC clojure
+(defn get-deepest-values [k]
+  (if (string? k) [k] (mapcat get-deepest-values (vals k))))
+#+END_SRC
+
+
+What the hell is this? What is it for? OH GOD.
+
+So here we're looking for strings inside a nest of keywords--that
+makes sense. What is mapcat? Clojure docs:
+
+#+BEGIN_BLOCKQUOTE
+    "Returns the result of applying concat to the result of
+    applying map to f and colls. Thus function f should return a
+    collection."
+#+END_BLOCKQUOTE
+
+Great, thanks Clojure docs. You're my bosom robot pal.
+
+What it means I think is that you're going to give this function
+a bundle of stuff and it'll do something to each piece of stuff
+(MAP!...) and then smush everything together into one nice list
+(...!CAT).  So we're saying given a nested associated structure
+like the one we just made, pull out all the values ...
+
+Wait hold on--let's look at how it's actually called.
+
+Okay this is the big mooooment
+
+#+BEGIN_SRC clojure
+(get-deepest-values
+  (get-in rhyme-to-word
+    (take 5
+      (word-to-rhyme "erection"))))
+#+END_SRC
+
+
+(Erection, eh Jack?)
+
+And this gives a result thus:
+
+#+BEGIN_SRC clojure
+    ("erection" "direction" "correction" "collection" "inflection"
+    "preelection" "circumspection" "introspection" "imperfection"
+    "perfection" "midsection" "transection" "connection"
+    "protection")
+#+END_SRC
+
+
+But sometimes it's all too last-first for me, so let's do that
+using this guy "->>"--which is a macro that allows you to put
+things in normal human-person order instead of LISPbot order,
+passing the results of the first function call as the last
+parameter to the next function and on and on.
+
+#+BEGIN_SRC clojure
+(->>
+  
+  (word-to-rhyme "erection")
+  ;; gives us [:N :AH :SH :K :EH :R :IH]
+
+  (take 5)
+  ;; gives us (:N :AH :SH :K :EH)--i.e. five phonemes, or the "ection" part of the rhyme.
+
+  (get-in rhyme-to-word)
+  ;; so we're calling (get-in rhyme-to-word '(:N :AH :SH :K :EH))
+  ;; and we get this result:
+  ;;
+  ;;    {:R {:IH {:terminate "erection"}}, :ER {:D {:terminate
+  ;;    "direction"}, :K {:terminate "correction"}}, :L {:AH {:K
+  ;;    {:terminate "collection"}}, :F {:N {:IH {:terminate
+  ;;    "inflection"}}}, :IH {:IY {:R {:P {:terminate
+  ;;    "preelection"}}}}}, :P {:S {:M {:AH {:K {:ER {:S {:terminate
+  ;;    "circumspection"}}}}}, :AH {:R {:T {:N {:IH {:terminate
+  ;;    "introspection"}}}}}}}, :F {:ER {:P {:M {:IH {:terminate
+  ;;    "imperfection"}}, :terminate "perfection"}}}, :S {:D {:IH
+  ;;    {:M {:terminate "midsection"}}}, :N {:AE {:R {:T {:terminate
+  ;;    "transection"}}}}}, :N {:AH {:K {:terminate "connection"}}},
+  ;;    :T {:AH {:R {:P {:terminate "protection"}}}}}
+  ;;
+  ;; Okay so THAT's what we're passing in when we call....
+  
+  (get-deepest-values))
+#+END_SRC
+
+
+So it turns out that all that
+
+
+#+BEGIN_SRC clojure
+    (defn get-deepest-values [k]
+     (if (string? k) [k] (mapcat get-deepest-values (vals k))))
+#+END_SRC
+
+
+does is say: Hey pal, get the values from the key/value pairs
+that are in a map called "k." If you hit any value at all that is
+a string, return it and you're done for that part. OTHERWISE keep
+mapping over the values and run this function again on each one
+of them (until you hit a string). And however nested things are
+is fine and all, but please return a nice flat list of results
+(that's why it's mapcat instead of cat").
+
+So it's like you gave it a Russian nested doll, except this is
+LISP so it's a Siamese Russian nested doll where the number of
+conjoined twins varies from nil to infinity. And it keeps looking
+inside the first twin's dolls until it finds a piece of paper
+with a word or two on it. Then it throws away all the dolls
+around those words. And it does the same to the other twin. Maybe
+the first twin is three dolls deep. Maybe the second twin is four
+dolls deep. Doesn't even matter. Get-deepest-values just digs
+right in there.
+
+Of all of them, these tiny recursive functions are the hardest to
+write and understand.
+
+Anyway, that's how it works, I think.
+
+** Application: Byronic Bigrams
+
+Okay so we have a nice rhyming dictionary. But Jack insists on
+complicating things and drops in this fun-fest.
+
+#+BEGIN_SRC clojure
+(def byron-bigrams [["soul" "wears"] ["light" "of"] ["moon" "be"]
+                     ["outwears" "its"] ["the" "soul"]
+                     ["night" "though"] ["heart" "must"]
+                     ["out" "the"] ["be" "still"] ["love" "itself"]
+                     ["the" "light"] ["pause" "to"] ["yet" "we"]
+                     ["for" "loving"] ["day" "returns"]
+                     ["the" "night"] ["too" "soon"] ["for" "the"]
+                     ["a" "roving"] ["will" "go"] ["loving" "and"]
+                     ["sword" "outwears"] ["to" "breathe"]
+                     ["breast" "and"] ["still" "as"] ["so" "late"]
+                     ["the" "day"] ["was" "made"] ["the" "sword"]
+                     ["more" "a"] ["soon" "yet"] ["must" "pause"]
+                     ["roving" "by"] ["the" "moon"]
+                     ["returns" "too"] ["itself" "have"]
+                     ["night" "was"] ["into" "the"] ["we" "will"]
+                     ["breathe" "and"] ["sheath" "and"] ["so" "we"]
+                     ["roving" "so"] ["no" "more"] ["made" "for"]
+                     ["the" "heart"] ["though" "the"] ["go" "no"]
+                     ["late" "into"] ["wears" "out"] ["and" "the"]
+                     ["of" "the"] ["by" "the"] ["and" "love"]
+                     ["the" "breast"] ["heart" "be"] ["as" "loving"]
+                     ["its" "sheath"]])
+#+END_SRC
+
+
+
+#+BEGIN_SRC clojure
+(group-by (comp (partial take 2) word-to-rhyme last) byron-bigrams)
+#+END_SRC
+
+
+It's a PUZZLER. I just want to be done now, friends. I just want
+to not be recursing. But let's chill and take it bit by bit. The
+dude has 30 years of reasons for writing code this way.
+
+First, the data above is a set of bigrams (subsequent word pairs)
+from Lord Byron's "We'll go no more a-roving."
+
+http://www.bartleby.com/101/599.html
+
+I was able to figure that out by the fact that the variable is
+named "byron" plus "bigrams" and included the word "roving." This
+part at least makes sense, thanks to Google.
+
+So let's put that into a var.
+
+#+BEGIN_SRC clojure
+(def roving-poem "SO, we'll go no more a-roving
+So late into the night,
+Though the heart be still as loving,
+And the moon be still as bright.
+
+For the sword outwears its sheath,
+And the soul wears out the breast,
+And the heart must pause to breathe,
+And love itself have rest.
+
+Though the night was made for loving,
+And the day returns too soon, 
+Yet we'll go no more a-roving
+By the light of the moon.")
+#+END_SRC
+
+
+Now Jack already has his bigrams in here. But I want to make my
+own damned bigrams. I tried a few different ways of making
+bigrams, here's one approach, with ten failures left out but a
+few failures left in.
+
+Let's break up roving-poem into lowercase words using a regular
+expression and the lower-case function.
+
+#+BEGIN_SRC clojure
+(def some-words 
+  (map string/lower-case
+    (string/split roving-poem #"[\s\.\-,]+")))
+#+END_SRC
+
+
+#+BEGIN_SRC clojure
+(take 10 some-words)
+=> ("so" "we'll" "go" "no" "more" "a" "roving" "so" "late" "into")
+#+END_SRC
+
+
+I'm really excited to have a function called "bigrammer" so let's
+go all the way and call it big-rammer. I started like this:
+
+#+BEGIN_SRC clojure
+(defn big-rammer0 [words]
+  (if (< (count words) 2)
+    (vec (first words) (second words)
+      (big-rammer0 rest words))))
+#+END_SRC
+
+But when I went
+
+#+BEGIN_SRC clojure
+(big-rammer0 some-words)
+#+END_SRC
+
+
+It returns nil, which suuuucks. Nil is the opposite of what I
+want (not really, nil is not the opposite of things, nil is a
+mysterious nothing.) Then I realized that the (if ...)  is
+probably in the wrong place, which always happens and got to:
+
+#+BEGIN_SRC clojure
+(defn big-rammer1 [words]
+  (list (first words) (second words)
+    (if (> (count words) 2)
+      (big-rammer1 (rest words)))))
+
+(big-rammer1 some-words)
+#+END_SRC
+
+
+And that returned
+
+
+#+BEGIN_SRC clojure
+    ("so" "we'll" ("we'll" "go" ("go" "no" ...[snipped a bunch]
+    nil)))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))))))))))))
+#+END_SRC
+
+
+Which is just way too many parentheses, even for Clojure.
+
+Now I know there is stuff like (flatten) and (filter identity)
+that would get me a flat list without the nil on the end. Nils
+are kind of the bane of my existence in Clojure, they keep
+showing up and I never know what to do with them. But that's not
+what I want; I want to get every two items and put them together
+just so without a whole lot of shenanigans to flatten the
+list. This has to be possible.
+
+Let's just try the recursive model a little bit more.
+
+Okay, I got it, maybe.
+
+Here's how I'd describe the following function in english: Given
+a buncha words ("cat" "dog" "ferret" "weasel"), do two things:
+make a list with all but the first of those words ("dog" "ferret"
+"weasel") and also a tiny list with the first and second word
+("cat "dog"). Then go ahead and call the EXACT SAME function on
+the first list with all but the first of the words---and KEEP
+calling that bad boy until it's down to two items. Then call it
+quits (which will return nil because there's nothing to
+return). Every time you made that call you make those tiny lists
+with two items, right? Well once you've exhausted the longer list
+you take all of them and conj[oin] them into one list of lists.
+
+Actually this part of LISP drives me crazy, I never quite GET IT,
+so let's break it down in exhaustive detail.
+
+#+BEGIN_SRC clojure
+(defn big-rammer2 [words]
+  (if (> (count words) 1)
+    (vec (conj (big-rammer2 (rest words))
+           (vec (list (first words) (second words)))))))
+
+(big-rammer2 '("cat" "dog" "ferret" "weasel"))  
+#+END_SRC
+
+
+This produces
+
+#+BEGIN_SRC clojure
+[["ferret" "weasel"] ["dog" "ferret"] ["cat" "dog"]]
+#+END_SRC
+
+
+Which is what we want. And man does it look LISPy, especially the
+part where it goes ")))))))"
+
+#+BEGIN_SRC clojure
+    (big-rammer2 some-words)
+#+END_SRC
+
+
+gives us a nice vector too, because
+we wrapped our lists in (vec). So now things are starting to look
+like byron-bigrams up top. We're getting somewhere.
+
+Okay let's run it piece by piece, interpolating the growing list
+of vectors.
+
+#+BEGIN_SRC clojure
+(big-rammer2 '("cat" "dog" "ferret" "weasel"))
+#+END_SRC
+
+
+PASS 1
+
+#+BEGIN_SRC clojure
+(vec (conj
+  (big-rammer2
+    '("dog" "ferret" "weasel"))
+       ["cat" "dog"]))
+#+END_SRC
+
+Result: 
+
+#+BEGIN_SRC clojure
+[["cat" "dog"] ["dog" "ferret"] ["ferret" "weasel"]]
+#+END_SRC
+
+
+PASS 2
+#+BEGIN_SRC clojure
+(vec (conj
+  (big-rammer2
+    '("ferret" "weasel"))
+       ["dog" "ferret"] ["cat" "dog"]))
+#+END_SRC
+
+
+Result: 
+
+#+BEGIN_SRC clojure
+[["cat" "dog"] ["dog" "ferret"] ["ferret" "weasel"]]
+#+END_SRC
+
+
+PASS 3
+#+BEGIN_SRC clojure
+(vec (conj
+  (big-rammer2
+    '("weasel"))
+       ["ferret" "weasel"] ["dog" "ferret"] ["cat" "dog"]))
+#+END_SRC
+
+Result:
+
+#+BEGIN_SRC clojure
+ [["cat" "dog"] ["dog" "ferret"] ["ferret" "weasel"]]
+#+END_SRC
+
+
+PASS 4
+#+BEGIN_SRC clojure
+(vec (conj nil ["ferret" "weasel"] ["dog" "ferret"] ["cat" "dog"]))
+#+END_SRC
+
+Result: 
+
+#+BEGIN_SRC clojure
+[["cat" "dog"] ["dog" "ferret"] ["ferret" "weasel"]]
+#+END_SRC
+
+
+The interesting thing is that if you DON'T have that nil it goes
+pear-shaped. So if I run:
+
+#+BEGIN_SRC clojure
+(vec (conj ["ferret" "weasel"] ["dog" "ferret"] ["cat" "dog"]))
+#+END_SRC
+
+
+I get:
+
+
+#+BEGIN_SRC clojure
+   ["ferret" "weasel" ["dog" "ferret"] ["cat" "dog"]]
+#+END_SRC
+
+
+Tooo nested. Now, what the hell, let's go a little deeper on
+conj. Because conjoining does all manner of stuff. Let's refer to
+the [[http://clojuredocs.org/clojure_core/clojure.core/conj][docs]]:
+
+#+BEGIN_BLOCKQUOTE
+   conj[oin]. Returns a new collection with the xs 'added'. (conj
+   nil item) returns (item). The 'addition' may happen at different
+   'places' depending on the concrete type.
+#+END_BLOCKQUOTE
+
+ARGH. It's like biting into a brick. So what are we really doing?
+
+Let's break this down:
+
+#+BEGIN_SRC clojure
+(conj [:foo] [:bar])
+#+END_SRC
+
+
+Makes
+
+#+BEGIN_SRC clojure
+   [:foo [:bar]]
+#+END_SRC
+
+
+Whereas
+
+#+BEGIN_SRC clojure
+(conj nil [:foo] [:bar])
+#+END_SRC
+
+
+Makes
+#+BEGIN_SRC clojure
+   ([:bar] [:foo])
+#+END_SRC
+
+
+Because it is CONJOINING bar /into/ foo. Whereas the docs, with
+their inimitable clarity, say:
+
+#+BEGIN_BLOCKQUOTE
+    "(conj nil item) returns (item)"
+#+END_BLOCKQUOTE
+
+So in theory...
+
+#+BEGIN_SRC clojure
+(= (list ["a"] ["b"]) (conj nil ["b"] ["a"]))
+#+END_SRC
+
+
+And indeed that /is/ true. Because conjing ["b"] onto nil produces
+(["b"]), and then conjing ["a"] onto that puts it into the list that
+contains ["b"].
+
+So this is a /big discovery/ for me. You process items and throw
+them at the end of a recursive function and then conjoin them when
+it's all done. Now the nil value produced when the function is
+called for the last time becomes the FIRST item that conjoin
+sees--and so conjoin goes ahead and puts everything that follows
+into a list. But it's /as if expressing everything in sequences were
+some sort of insane sickly goal./ Which sure, I get that, I'm
+programming in a LISP, but it is weird when you see it up
+close. Like when you see your screen is made of pixels.
+
+I.e. the thing I'm trying to get to/comprehend is that in Clojure
+it's not just that there are a lot of lists (seqs); it's that
+lists inform every aspect of the language and if you don't see a
+list, or some relationship that can be expressed as a set of
+lists, you should keep looking. If you don't see/feel a sequence,
+you're not looking hard enough. And this kind of makes sense
+because computers at their essence just put stuff in boxes and
+take stuff out of boxes in predetermined sequences. So this is a
+funny thing about LISP because it's a suuuuuper-crazy abstraction
+and maps to lambda calculus, but it's simultaneously weirdly
+close to the metal, which is why it must appeal to a certain kind
+of nerd. I find this really comforting but I can see why other
+people would not. I think this is what Jack is trying to tell me!
+(It is; I actually checked with him to be sure.)
+
+Anyway all of this is moot because I also went and searched for a
+bigram-maker and found one in incanter, which is a general
+purpose math/stats library for Clojure.
+
+And what that makes clear is that we can use the partition
+function--here called as (partition 2 1) which goes ahead and takes
+a list of two things, fast-forwards by one thing, takes the next two
+things, fast forwards by one thing, etc. So partition is a built-in
+that does what our recursive function does above but I /regret
+nothing/. So we can get all of our words at once by going:
+
+#+BEGIN_SRC clojure
+(def words 
+  (map #(vec %) (partition 2 1
+                  (map string/lower-case
+                    (string/split roving-poem #"[\s\.\-,]+")))))
+#+END_SRC
+
+(Note: Jack points out that "#(vec %)" could just be "vec", but
+everyone makes this mistake so I'm leaving it in.)
+
+I.e. partition into bigrams and and then map those into vectors
+(#() is shorthand for defining a function with an argument "%")
+and you'll end up with a structure basically like the one Jack
+has in his original (there are a few tiny differences; his
+doesn't preserve apostrophes, but we're close enough now.) So I
+feel okay about that. I get how to make bigrams both via map and
+via a recursive funtion. Now let's get to the end....
+
+#+BEGIN_SRC clojure
+(group-by (comp (partial take 2) word-to-rhyme last) byron-bigrams)
+#+END_SRC
+
+
+Okay we're almost home.
+
+"(comp...)" means we're going to make a function out of other
+functions.
+
+"(partial...)" means we're making a function with partial
+arguments that can be called and evaluated with just the
+"missing" arguments provided.
+
+So...
+
+#+BEGIN_SRC clojure
+    (= ((partial take 2) '(1 2 3 4))
+     '(1 2))
+    => true
+#+END_SRC
+
+
+That works fine but is of course most handy when you go:
+
+#+BEGIN_SRC clojure
+    (= 
+     (map (partial take 2) [[1 2 3] [4 5 6] [7 8 9]])
+      '((1 2) (4 5) (7 8)))
+    => true
+#+END_SRC
+
+
+This jibes with everything I've learned about LISP, which is that
+LISP is about lots of tiny functions that can all live together
+in beautiful harmony, except on Usenet.
+
+Anyway if we execute the above with just the (first) of the
+byron-bigrams...
+
+#+BEGIN_SRC clojure
+    ((comp (partial take 2) word-to-rhyme last) (first
+    byron-bigrams))
+    => (:Z :R)
+#+END_SRC
+
+
+That is the same as:
+
+#+BEGIN_SRC clojure
+    (take 2 (word-to-rhyme (last (first byron-bigrams))))
+    => (:Z :R)
+#+END_SRC
+
+
+And so
+
+#+BEGIN_SRC clojure
+    (= ((comp (partial take 2) word-to-rhyme last)
+    (first byron-bigrams))
+     (take 2 (word-to-rhyme (last (first byron-bigrams)))))
+#+END_SRC
+
+
+There's a lot of chitchat about functional composition out there in
+LISPLand but all we're REALLY saying is "smush together all of
+these functions so that they can be run over and over with data
+of the sort that you'll find in byron-bigrams." Like, the
+composition part should be easy--and here it is--the hard part is
+in making composable functions.
+
+Anyway, group-by is pretty familiar; just about every language
+has it. It runs a function over a list and the result is the key
+in a map, and the value that produced that key is added to a
+vector on the right hand side. (PASS THE VECTOR TO THE RIGHT HAND
+SIDE PASS THE VECTOR TO THE RIGHT HAND SIDE). Anyway. So when we
+run this we're going to get a map of all the bigrams where the
+last two phonemes of the last word are exactly identical. Thus
+we'll get all the bigrams that rhyme, at least in terms of two
+phonemes meaning a "rhyme."
+
+#+BEGIN_SRC clojure
+(group-by (comp (partial take 2) word-to-rhyme last) byron-bigrams)
+#+END_SRC
+
+
+And we do! Here's what comes out:
+#+BEGIN_SRC clojure
+{(:L :IH) [["be" "still"] ["we" "will"]], () [["sword" "outwears"]],
+(:N :UW) [["too" "soon"] ["the" "moon"]], 
+(:NG :IH) [["for" "loving"] ["a" "roving"] ["as" "loving"]],
+(:OW :S) [["roving" "so"]], 
+(:OW :DH) [["night" "though"]], 
+(:IY :W) [["yet" "we"] ["so" "we"]], 
+(:T :S) [["heart" "must"] ["the" "breast"]], 
+(:D :EY) [["was" "made"]], 
+(:T :AY) [["the" "light"] ["the" "night"]], 
+(:T :R) [["the" "heart"]], 
+(:OW :N) [["go" "no"]], 
+(:T :EH) [["soon" "yet"]],
+(:EY) [["more" "a"]],
+(:Z :R) [["soul" "wears"]],
+(:R :AO) [["no" "more"]["made" "for"]], 
+(:Z :AA) [["night" "was"]],
+(:AY :B) "roving" "by"]],
+(:V :AH) [["light" "of"] ["and" "love"]],
+(:Z :N) [["day" "returns"]],
+(:V :AE) [["itself" "have"]],
+(:D :R) [["the" "sword"]],
+(:Z :AE) [["still" "as"]], 
+(:OW :G) [["will" "go"]], 
+(:TH :IY) [["its" "sheath"]],
+(:F :L) [["love" "itself"]], 
+(:D :N) [["loving" "and"] ["breast" "and"] ["breathe" "and"] ["sheath" "and"]],
+(:Z :AO) [["must" "pause"]],
+(:T :AW) [["wears" "out"]],
+(:IY :B) [["moon" "be"]["heart" "be"]],
+(:DH :IY) [["to" "breathe"]],
+(:UW :T) [["pause" "to"] ["returns" "too"] ["late" "into"]],
+(:T :EY) "so" "late"]],
+(:AH :DH) [["out" "the"] ["for" "the"]["into" "the"]["though" "the"]
+  ["and" "the"]["of" "the"] ["by" "the"]],
+(:L :OW) [["the" "soul"]],
+(:S :T) [["outwears" "its"]],
+(:EY :D) [["the" "day"]]}
+#+END_SRC
+
+
+So there we are. Jack points out something important via chat
+discussion on Google Jabberchat, which I'm adding here.
+
+*** Jack annotates
+
+#+BEGIN_BLOCKQUOTE
+The lesson of the group-by is that if you parameterize your grouping
+function with another function, you only need to write group-by
+once---rather than having a group-by for each of your data types.
+
+The sub-lessons are that composition and partial evaluation let you
+improvise the function you use to do that parameterization, with
+basically no ceremony.
+
+Last thing on parameterizing functions with functions:
+that’s also how the calculus works
+
+__END JACK TRANSMISSION__
+#+END_BLOCKQUOTE
+
+"...that's also how the calculus works..." I mean come on. That's
+fun. No one says that about web frameworks. They're all like "it
+compiles SASS now!"
+
+So basically we're done (but don't worry I've added a giant essay
+to this because what is wrong with me.) Here are some possible
+next steps:
+
+1) Care about syllables
+2) Look for words that are phonetic opposites of one another.
+3) Wrap a web service around it.
+4) Relax.
+
+Here are some notes and observations from this exercise.
+
+
+** What I Learned
+*** Perlis!
+
+The Alan Perlis maxim about having 100 functions operate on one
+data structure keeps coming back to my head over and over. It's
+like that quote is the data structure and my brain keeps
+operating on it in 100 different ways.
+
+*** Keep Like with Like
+
+If things need to get processed, just do it inside the
+function. Don't make tons of little functions like, say,
+"filter-to-lowercase" or the like, as I would in Python hanging
+off the class; just do it right there in the function. At some
+level this fits well with my overall life/programming/editorial/
+writing strategy of "keep like with like," which is the one true
+principle of just about everything, but it requires a lot of
+familiarity and comfort with the programming model--especially
+the right-to-left depth-first model of LISPs--to really be
+proficient in this kind of coding, to know where to break things
+off into multiple functions.
+
+*** It Really Is All Lists
+
+Things WANT to be lists, and Clojure wants them to be
+lists. Destructuring is not about dealing with arbitrary numbers
+of arguments. It's about pulling out a few named arguments, then
+throwing the rest into a sequence, so that you can quickly take
+something dumb--a list of strings representing words and
+phonemes--and make that list a little smarter. And repeat. Add
+smarts, process the rest, add smarts, process the rest. The ethos
+seems to be: Take dumb stuff, add smarts, repeat.
+
+*** Data types
+Getting things into the right data type really helps to simplify
+your life. If you take the phonemes and make them keywords, going
+from "EK" to :EK, then you can pull results out of a nested trie
+structure and recursively look through it for the strings, which
+are your payload, and ignore the keywords. My regular pattern is
+to create really big associative arrays from any data source--to
+reinvent XML or JSON in-memory, basically, with lots of nested
+arrays and so forth; the idea here seems to be that the best
+possible data structure is a nice plain list without a lot of
+fooling around and it's okay to assume the code knows about the
+data once they meet up; the data doesn't have to tell the code
+what every field means. Again--my roots are document processing,
+where that's actually a good thing. We take more for granted on
+planet Clojure.
+
+
+** Conclusion
+You know, there's a strong, strong urge to never actually finish
+anything when I'm in Clojure. This is because the "finished"
+state is less relevant when you're evaluating code live inside a
+text editor and looking at (and then parsing) the results back
+into the same live coding environment. The whole idea of
+"finished" seems kind of hilarious, like you are some sort of God
+looking down on humans who are still maintaining state in
+variables and sort of squinting and sighing, and since nothing is
+ever REALLY done, why pretend otherwise?
+
+I'm not using a REPL. I'm just evaluating, evaluating, evaluating
+all day long. It's very easy to get separatist about this
+environment. Meanwhile everyone else has shipped their websites
+and gone out for dinner to celebrate their acquihiresition while
+I'm sitting home at 2AM trying to understand the spiritual
+essence of "conj."
+
+EXCEPT I know in my little heart that I'm a better programmer
+after two or three weeks of dabbling in Clojure. But I don't have
+a TON to show, and not as much as I'd have with Python, for
+certain. And I do have a product to ship. That said, huge amount
+of opaque code (especially Emacs LISP) is far more open to me
+than it used to be, and readable. And I've had an awful lot of
+"oh wow actually that's very easy if you just use (partition)"
+moments reading the standard library code. Lots of bits of
+programmer culture--Jamie Zawinski rants, "Worse is Better,"
+Haskell passion--make more sense.
+
+So this is probably a net win. What Clojure is teaching me is to
+calm down, look at the function signature in my Emacs modeline,
+check the standard docs (control-C d), and then write a function
+and rewrite it until it doesn't explode and does what I want. And
+you just sort of keep on doing it. And if it comes together
+(maybe the partial Wikipedia parser I'm writing could be useful)
+you bundle it up and release it to Github.
+
+Stuff like that recursive big-rammer2 function used to be really
+hard for me to wrap my head around, and it's not any more--the
+magic has gone out of it. It's nice to see magic destroyed. One
+thing about magic is that when it gets bundled up 
+but is still hidden from view (i.e. in frameworks) it leads to 
+sameness of product. Every wizard has the same spells.
+
+When you look at what people are doing so far, there doesn't seem
+to be a prototypical Clojure app out in the world. People seem to
+be focused on the language, and on gluing together things from other 
+languages so they can be used here. It'll be
+interesting to see what emerges. There are some web frameworks, but 
+some minimal web app layers like Ring that make more sense to me right
+now. Frameworks are great but they sure do lead to a
+lot of apps that look and feel and...taste? alike. I'm not saying
+things should be hard--I'm just saying that we create things with
+our tools, and thus our tools have consequences.
+
