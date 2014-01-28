@@ -5,7 +5,7 @@
 Diagram: LISP Internals
 
 ** What Is this document?
-So let's say we want to create a thyming dictionary in Clojure. Not
+So let's say we want to create a rhyming dictionary in Clojure. Not
 so much a rhyming dictionary application---although you /could/
 create such a thing---but a data structure that contains
 pronunciation data and which we could use in any program.
