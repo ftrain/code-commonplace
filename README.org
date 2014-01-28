@@ -1,7 +1,17 @@
 #+TITLE: Code Commonplace Book
 
+* What is this?
 An easily forkable commonplace book for heavily-annotated
 interesting code of all kinds, notes, and so forth, from the
 enormous digital world in which we find ourselves.
 
-Eventually a table of contents will go here.
+* Table of contents
+Perhaps some day a table of contents will go here.
+
+* Why not use the GitHub wiki?
+Because this should be a live, local document that anyone can add to
+in their own little experimental world. That part of git is really
+awesome.
+
+Of course org-mode limits things to emacs. But it has great HTML
+export (and thus should work for ebooks) and LaTeX support.
