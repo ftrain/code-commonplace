@@ -1,0 +1,1852 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Instructional Exercise: A Rhyming Dictionary in Clojure</title>
+<!-- 2014-01-28 Tue 15:18 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Paul Ford &lt;ford@ftrain.com&gt;, based on code by Jack Rusher &lt;jack@rusher.com&gt;" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Instructional Exercise: A Rhyming Dictionary in Clojure</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. What Is this document?</a></li>
+<li><a href="#sec-2">2. What Is the Code?</a></li>
+<li><a href="#sec-3">3. What Is the Data?</a></li>
+<li><a href="#sec-4">4. What Functions Operate on the Data?</a></li>
+<li><a href="#sec-5">5. Application: Byronic Bigrams</a>
+<ul>
+<li><a href="#sec-5-1">5.1. Jack annotates</a></li>
+</ul>
+</li>
+<li><a href="#sec-6">6. What I Learned</a>
+<ul>
+<li><a href="#sec-6-1">6.1. Perlis!</a></li>
+<li><a href="#sec-6-2">6.2. Keep Like with Like</a></li>
+<li><a href="#sec-6-3">6.3. It Really Is All Lists</a></li>
+<li><a href="#sec-6-4">6.4. Data types</a></li>
+</ul>
+</li>
+<li><a href="#sec-7">7. Conclusion</a></li>
+</ul>
+</div>
+</div>
+<p>
+<img src="http://upload.wikimedia.org/wikipedia/commons/7/74/Pieter_Bruegel_the_Elder-_Big_Fish_Eat_Little_Fish.JPG" alt="Pieter_Bruegel_the_Elder-_Big_Fish_Eat_Little_Fish.JPG" />
+Diagram: LISP Internals
+</p>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> What Is this document?</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+So let&rsquo;s say we want to create a thyming dictionary in Clojure. Not
+so much a rhyming dictionary application&#x2014;although you <i>could</i>
+create such a thing&#x2014;but a data structure that contains
+pronunciation data and which we could use in any program.
+</p>
+
+<p>
+<a href="http://rhetoricaldevice.com">Jack Rusher</a>, a good friend and computer scientist, put up this code
+here&#x2026;
+</p>
+
+<p>
+<a href="https://gist.github.com/jackrusher/8640437">https://gist.github.com/jackrusher/8640437</a>
+</p>
+
+<p>
+&#x2026;to demonstrate some interesting aspects of Clojure. Then he
+encouraged his friends to figure it out. I&rsquo;m going to study this
+code and learn as I go. 
+</p>
+
+<p>
+The structure of this document (and thus a template for future
+documents of this sort) is:
+</p>
+
+<ul class="org-ul">
+<li>Introduction
+</li>
+<li>The plain old code
+</li>
+<li>What data are we dealing with?
+</li>
+<li>What are we going to do to deal with that data?
+</li>
+<li>Let&rsquo;s apply what we&rsquo;ve learned!
+</li>
+<li>Notes and findings
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> What Is the Code?</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+This code works with a file downloaded from&#x2026;
+</p>
+
+<p>
+<a href="http://svn.code.sf.net/p/cmusphinx/code/trunk/cmudict/cmudict.0.7a">http://svn.code.sf.net/p/cmusphinx/code/trunk/cmudict/cmudict.0.7a</a>
+</p>
+
+<p>
+&#x2026;and renamed to cmudict.txt.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">rhyme-txt</span>
+  <span style="color: #666;">(</span><span style="color: #FF6400;">map</span> #<span style="color: #666;">(</span>string/split % #<span style="color: #61CE3C;">"[ ]+"</span><span style="color: #666;">)</span> 
+     <span style="color: #666;">(</span>string/split-lines <span style="color: #666;">(</span><span style="color: #FF6400;">slurp</span> <span style="color: #61CE3C;">"cmudict.txt"</span><span style="color: #666;">))))</span>
+
+<span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">word-to-rhyme</span>
+  <span style="color: #666;">(</span><span style="color: #FF6400;">reduce</span> <span style="color: #666;">(</span><span style="color: #FBDE2D;">fn</span> [m [word &amp; rhyme]]
+            <span style="color: #666;">(</span><span style="color: #FF6400;">assoc</span> m
+              <span style="color: #666;">(</span>string/lower-case word<span style="color: #666;">)</span>
+              <span style="color: #666;">(</span><span style="color: #FF6400;">mapv</span> #<span style="color: #666;">(</span><span style="color: #FF6400;">keyword</span> 
+                       <span style="color: #666;">(</span>string/<span style="color: #FF6400;">replace</span> %1 #<span style="color: #61CE3C;">"[0-9]"</span> <span style="color: #61CE3C;">""</span><span style="color: #666;">))</span> <span style="color: #666;">(</span><span style="color: #FF6400;">reverse</span> rhyme<span style="color: #666;">))))</span>
+          {} rhyme-txt<span style="color: #666;">))</span>
+
+<span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">rhyme-to-word</span>
+  <span style="color: #666;">(</span><span style="color: #FF6400;">reduce</span> <span style="color: #666;">(</span><span style="color: #FBDE2D;">fn</span> [m [word rhyme]] 
+     <span style="color: #666;">(</span><span style="color: #FF6400;">assoc-in</span> m rhyme { <span style="color: #4c83ff;">:terminate</span> word }<span style="color: #666;">))</span> {} word-to-rhyme<span style="color: #666;">))</span>
+
+<span style="color: #666;">(</span><span style="color: #FBDE2D;">defn</span> <span style="color: #ff1493;">get-deepest-values</span> [k]
+  <span style="color: #666;">(</span><span style="color: #FBDE2D;">if</span> <span style="color: #666;">(</span><span style="color: #FF6400;">string?</span> k<span style="color: #666;">)</span> [k] <span style="color: #666;">(</span><span style="color: #FF6400;">mapcat</span> get-deepest-values <span style="color: #666;">(</span><span style="color: #FF6400;">vals</span> k<span style="color: #666;">))))</span>
+
+<span style="color: #666;">(</span>get-deepest-values <span style="color: #666;">(</span><span style="color: #FF6400;">get-in</span> rhyme-to-word 
+                     <span style="color: #666;">(</span><span style="color: #FF6400;">take</span> 5 <span style="color: #666;">(</span>word-to-rhyme <span style="color: #61CE3C;">"connection"</span><span style="color: #666;">))))</span>
+
+<span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">=&gt; ("erection" "direction" "correction" "collection" "inflection"</span>
+<span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">"preelection" "circumspection" "introspection" "imperfection"</span>
+<span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">"perfection" "midsection" "transection" "connection"</span>
+<span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">"protection")</span>
+
+<span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">byron-bigrams</span> [[<span style="color: #61CE3C;">"soul"</span> <span style="color: #61CE3C;">"wears"</span>] [<span style="color: #61CE3C;">"light"</span> <span style="color: #61CE3C;">"of"</span>] [<span style="color: #61CE3C;">"moon"</span> <span style="color: #61CE3C;">"be"</span>]
+                    [<span style="color: #61CE3C;">"outwears"</span> <span style="color: #61CE3C;">"its"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"soul"</span>]
+                    [<span style="color: #61CE3C;">"night"</span> <span style="color: #61CE3C;">"though"</span>] [<span style="color: #61CE3C;">"heart"</span> <span style="color: #61CE3C;">"must"</span>]
+                    [<span style="color: #61CE3C;">"out"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"be"</span> <span style="color: #61CE3C;">"still"</span>] [<span style="color: #61CE3C;">"love"</span> <span style="color: #61CE3C;">"itself"</span>]
+                    [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"light"</span>] [<span style="color: #61CE3C;">"pause"</span> <span style="color: #61CE3C;">"to"</span>] [<span style="color: #61CE3C;">"yet"</span> <span style="color: #61CE3C;">"we"</span>]
+                    [<span style="color: #61CE3C;">"for"</span> <span style="color: #61CE3C;">"loving"</span>] [<span style="color: #61CE3C;">"day"</span> <span style="color: #61CE3C;">"returns"</span>]
+                    [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"night"</span>] [<span style="color: #61CE3C;">"too"</span> <span style="color: #61CE3C;">"soon"</span>] [<span style="color: #61CE3C;">"for"</span> <span style="color: #61CE3C;">"the"</span>]
+                    [<span style="color: #61CE3C;">"a"</span> <span style="color: #61CE3C;">"roving"</span>] [<span style="color: #61CE3C;">"will"</span> <span style="color: #61CE3C;">"go"</span>] [<span style="color: #61CE3C;">"loving"</span> <span style="color: #61CE3C;">"and"</span>]
+                    [<span style="color: #61CE3C;">"sword"</span> <span style="color: #61CE3C;">"outwears"</span>] [<span style="color: #61CE3C;">"to"</span> <span style="color: #61CE3C;">"breathe"</span>]
+                    [<span style="color: #61CE3C;">"breast"</span> <span style="color: #61CE3C;">"and"</span>] [<span style="color: #61CE3C;">"still"</span> <span style="color: #61CE3C;">"as"</span>] [<span style="color: #61CE3C;">"so"</span> <span style="color: #61CE3C;">"late"</span>]
+                    [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"day"</span>] [<span style="color: #61CE3C;">"was"</span> <span style="color: #61CE3C;">"made"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"sword"</span>]
+                    [<span style="color: #61CE3C;">"more"</span> <span style="color: #61CE3C;">"a"</span>] [<span style="color: #61CE3C;">"soon"</span> <span style="color: #61CE3C;">"yet"</span>] [<span style="color: #61CE3C;">"must"</span> <span style="color: #61CE3C;">"pause"</span>]
+                    [<span style="color: #61CE3C;">"roving"</span> <span style="color: #61CE3C;">"by"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"moon"</span>] [<span style="color: #61CE3C;">"returns"</span> <span style="color: #61CE3C;">"too"</span>]
+                    [<span style="color: #61CE3C;">"itself"</span> <span style="color: #61CE3C;">"have"</span>] [<span style="color: #61CE3C;">"night"</span> <span style="color: #61CE3C;">"was"</span>] [<span style="color: #61CE3C;">"into"</span> <span style="color: #61CE3C;">"the"</span>]
+                    [<span style="color: #61CE3C;">"we"</span> <span style="color: #61CE3C;">"will"</span>] [<span style="color: #61CE3C;">"breathe"</span> <span style="color: #61CE3C;">"and"</span>] [<span style="color: #61CE3C;">"sheath"</span> <span style="color: #61CE3C;">"and"</span>]
+                    [<span style="color: #61CE3C;">"so"</span> <span style="color: #61CE3C;">"we"</span>] [<span style="color: #61CE3C;">"roving"</span> <span style="color: #61CE3C;">"so"</span>] [<span style="color: #61CE3C;">"no"</span> <span style="color: #61CE3C;">"more"</span>]
+                    [<span style="color: #61CE3C;">"made"</span> <span style="color: #61CE3C;">"for"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"heart"</span>] [<span style="color: #61CE3C;">"though"</span> <span style="color: #61CE3C;">"the"</span>]
+                    [<span style="color: #61CE3C;">"go"</span> <span style="color: #61CE3C;">"no"</span>] [<span style="color: #61CE3C;">"late"</span> <span style="color: #61CE3C;">"into"</span>] [<span style="color: #61CE3C;">"wears"</span> <span style="color: #61CE3C;">"out"</span>]
+                    [<span style="color: #61CE3C;">"and"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"of"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"by"</span> <span style="color: #61CE3C;">"the"</span>]
+                    [<span style="color: #61CE3C;">"and"</span> <span style="color: #61CE3C;">"love"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"breast"</span>] [<span style="color: #61CE3C;">"heart"</span> <span style="color: #61CE3C;">"be"</span>]
+                    [<span style="color: #61CE3C;">"as"</span> <span style="color: #61CE3C;">"loving"</span>] [<span style="color: #61CE3C;">"its"</span> <span style="color: #61CE3C;">"sheath"</span>]]<span style="color: #666;">)</span>
+
+<span style="color: #666;">(</span><span style="color: #FF6400;">group-by</span> <span style="color: #666;">(</span><span style="color: #FF6400;">comp</span> <span style="color: #666;">(</span><span style="color: #FF6400;">partial</span> take 2<span style="color: #666;">)</span> word-to-rhyme last<span style="color: #666;">)</span> byron-bigrams<span style="color: #666;">)</span>
+
+<span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">{(:L :IH) [["be" "still"] ["we" "will"]], () [["sword"</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">"outwears"]], (:N :UW) [["too" "soon"] ["the" "moon"]], (:NG</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">:IH) [["for" "loving"] ["a" "roving"] ["as" "loving"]], (:OW :S)</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">[["roving" "so"]], (:OW :DH) [["night" "though"]], (:IY :W)</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">[["yet" "we"] ["so" "we"]], (:T :S) [["heart" "must"] ["the"</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">"breast"]], (:D :EY) [["was" "made"]], (:T :AY) [["the" "light"]</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">["the" "night"]], (:T :R) [["the" "heart"]], (:OW :N) [["go"</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">"no"]], (:T :EH) [["soon" "yet"]], (:EY) [["more" "a"]], (:Z :R)</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">[["soul" "wears"]], (:R :AO) [["no" "more"] ["made" "for"]], (:Z</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">:AA) [["night" "was"]], (:AY :B) [["roving" "by"]], (:V :AH)</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">[["light" "of"] ["and" "love"]], (:Z :N) [["day" "returns"]],</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">(:V :AE) [["itself" "have"]], (:D :R) [["the" "sword"]], (:Z</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">:AE) [["still" "as"]], (:OW :G) [["will" "go"]], (:TH :IY)</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">[["its" "sheath"]], (:F :L) [["love" "itself"]], (:D :N)</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">[["loving" "and"] ["breast" "and"] ["breathe" "and"] ["sheath"</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">"and"]], (:Z :AO) [["must" "pause"]], (:T :AW) [["wears"</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">"out"]], (:IY :B) [["moon" "be"] ["heart" "be"]], (:DH :IY)</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">[["to" "breathe"]], (:UW :T) [["pause" "to"] ["returns" "too"]</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">["late" "into"]], (:T :EY) [["so" "late"]], (:AH :DH) [["out"</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">"the"] ["for" "the"] ["into" "the"] ["though" "the"] ["and"</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">"the"] ["of" "the"] ["by" "the"]], (:L :OW) [["the" "soul"]],</span>
+<span style="color: #8B8989; font-style: italic;">;;  </span><span style="color: #8B8989; font-style: italic;">(:S :T) [["outwears" "its"]], (:EY :D) [["the" "day"]]}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> What Is the Data?</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+First I put it in a namespace.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">ns</span> unscroll.rhyme
+  <span style="color: #666;">(</span><span style="color: #4c83ff;">:require</span> 
+    [clojure.string <span style="color: #4c83ff;">:as</span> string]<span style="color: #666;">))</span>
+</pre>
+</div>
+
+<p>
+So that I can mess with it inside my current environment in
+emacs.
+</p>
+
+<p>
+Here is the first function.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">rhyme-txt</span>
+  <span style="color: #666;">(</span><span style="color: #FF6400;">map</span> #<span style="color: #666;">(</span>string/split % #<span style="color: #61CE3C;">"[ ]+"</span><span style="color: #666;">)</span>
+    <span style="color: #666;">(</span>string/split-lines
+      <span style="color: #666;">(</span><span style="color: #FF6400;">slurp</span> <span style="color: #61CE3C;">"data/cmudict.txt"</span><span style="color: #666;">))))</span>
+</pre>
+</div>
+
+<p>
+So this presumes a file called cmudict.txt, the CMU pronunciation
+dictionary. Which is sort of an old standby for word nerds, like
+WordNet too, from back in the day before everything was free and
+a pronunciation dictionary in digital form felt like an almost
+unbearably large gift from the Gods.
+</p>
+
+<p>
+The format of the dictionary is such:
+</p>
+
+<pre class="example">
+ABDOMEN  AE0 B D OW1 M AH0 N
+</pre>
+
+<p>
+i.e. something like
+</p>
+
+<div class="blockquote">
+<p>
+WORD[SPACE]PHONEME<sub>1[SPACE]PHONEME</sub><sub>2[SPACE]</sub>&#x2026;PHONEME<sub>N[NEWLINE]</sub>
+</p>
+
+</div>
+
+
+<p>
+So we (slurp) in the file, split the lines by newlines, and then
+split on space.
+</p>
+
+<p>
+Gotta love (slurp); one thing it took me a while to figure out
+the other day is that slurp starts looking for files at the top
+level of the Clojure project. Where the source files are means
+nothing to Clojure (because they means nothing to the JVM); it&rsquo;s
+the project that sets the path. Just putting this here to save
+someone else the 20 minutes.
+</p>
+
+<p>
+Anyway now that we&rsquo;ve done that we can say:
+(take 3 (drop 1010 rhyme-txt))
+</p>
+
+<p>
+(Okay so we&rsquo;re not getting rid of comments in the dictionary
+source or anything when we do this, it&rsquo;s fast-and-dirty. So for
+purposes of the example we want to fast-forward past a bunch of
+comments and miscellany to get a clear example, so start around
+item 1010)
+</p>
+
+<p>
+And we&rsquo;d see
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span>[<span style="color: #61CE3C;">"ACTUARY"</span> <span style="color: #61CE3C;">"AE1"</span> <span style="color: #61CE3C;">"K"</span> <span style="color: #61CE3C;">"CH"</span> <span style="color: #61CE3C;">"UW0"</span> <span style="color: #61CE3C;">"EH1"</span> <span style="color: #61CE3C;">"R"</span> <span style="color: #61CE3C;">"IY2"</span>]
+ [<span style="color: #61CE3C;">"ACTUATE"</span> <span style="color: #61CE3C;">"AE1"</span> <span style="color: #61CE3C;">"K"</span> <span style="color: #61CE3C;">"CH"</span> <span style="color: #61CE3C;">"UW2"</span> <span style="color: #61CE3C;">"EY1"</span> <span style="color: #61CE3C;">"T"</span>]
+ [<span style="color: #61CE3C;">"ACTUATOR"</span> <span style="color: #61CE3C;">"AE1"</span> <span style="color: #61CE3C;">"K"</span> <span style="color: #61CE3C;">"T"</span> <span style="color: #61CE3C;">"Y"</span> <span style="color: #61CE3C;">"UW0"</span> <span style="color: #61CE3C;">"EY2"</span> <span style="color: #61CE3C;">"T"</span> <span style="color: #61CE3C;">"ER0"</span>]<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+So now we&rsquo;re dealing with a list () of vectors [] where the first
+value is a string representing word and the rest are strings
+representing phonemes.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> What Functions Operate on the Data?</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+There&rsquo;s a lot going on with this one as there always is with
+Clojure code. Let&rsquo;s see how it gets called first:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span>get-deepest-values <span style="color: #666;">(</span><span style="color: #FF6400;">get-in</span> rhyme-to-word <span style="color: #666;">(</span><span style="color: #FF6400;">take</span> 3
+<span style="color: #666;">(</span>word-to-rhyme <span style="color: #61CE3C;">"connection"</span><span style="color: #666;">))))</span>
+</pre>
+</div>
+
+
+<p>
+Which could probably be a function of its own called (rhyme).
+Although I&rsquo;ve noticed Jack doesn&rsquo;t really care much whether
+something is a function or a variable, it&rsquo;s like it DOESN&rsquo;T EVEN
+MATTER. Hmm.
+</p>
+
+<p>
+Anyway, we&rsquo;re going to give this function, (word-to-rhyme) a word
+and get something back.
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span>word-to-rhyme <span style="color: #61CE3C;">"connection"</span><span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+and we get
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[<span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:SH</span> <span style="color: #4c83ff;">:K</span> <span style="color: #4c83ff;">:EH</span> <span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:K</span>]
+</pre>
+</div>
+
+
+<p>
+which is the reverse order of phonemes. Which makes sense, we&rsquo;re
+building a rhyming dictionary, gonna go end to beginning in terms
+of phonemes.
+</p>
+
+<p>
+Going to add a crazy amount of indenting here so I can see the
+levels more clearly as a n00b.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">word-to-rhyme</span>
+  <span style="color: #666;">(</span><span style="color: #FF6400;">reduce</span> <span style="color: #666;">(</span><span style="color: #FBDE2D;">fn</span> [m [word &amp; rhyme]]
+            <span style="color: #666;">(</span><span style="color: #FF6400;">assoc</span> m
+              <span style="color: #666;">(</span>string/lower-case word<span style="color: #666;">)</span>
+              <span style="color: #666;">(</span><span style="color: #FF6400;">mapv</span>
+                #<span style="color: #666;">(</span><span style="color: #FF6400;">keyword</span>
+                   <span style="color: #666;">(</span>string/<span style="color: #FF6400;">replace</span> %1 #<span style="color: #61CE3C;">"[0-9]"</span> <span style="color: #61CE3C;">""</span><span style="color: #666;">))</span>
+                <span style="color: #666;">(</span><span style="color: #FF6400;">reverse</span> rhyme<span style="color: #666;">))))</span>
+    {} rhyme-txt<span style="color: #666;">))</span>
+</pre>
+</div>
+
+
+<p>
+This is a funny one because as I mess with the parens my java
+keeps running out of heap space. So it&rsquo;s clearly doing a lot,
+like loading the whole CMU dictionary into memory. This is
+something that seems to happen when you mix in-buffer evaluation
+with lazy evaluation&#x2013;occasionally you&rsquo;ll just blow up your
+session because you put something in the wrong place and called
+it a billion times instead of 100.
+</p>
+
+<p>
+The super hot LISPY action in there is
+</p>
+
+
+<div class="blockquote">
+<p>
+(reduce function = [that function] 
+             val = [an empty map {}]
+            coll = [rhyme-txt, our list of vectors])
+</p>
+
+</div>
+
+<p>
+Clojure docs are kind of a bear. For reduce, they say &ldquo;If val is
+supplied, returns the result of applying f to val and the first
+item in coll, then applying f to that result and the 2nd item,
+etc.&rdquo; Awesome. Although I will say that they are always accurate
+and if you read them ten or twenty times they start to make
+sense. (Plus the community is completely tutorial-mad, there&rsquo;s no
+shortage of ways to learn this language, although in my case
+having an old-school Comp Sci guy as a friend helps.)
+</p>
+
+<p>
+So what reduce does here is return the results applying that
+function in there to {} and the first item in the rhyme-text,
+then applies that to the second item, etc.
+</p>
+
+<p>
+In
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[m [word &amp; rhyme]]
+</pre>
+</div>
+
+
+<p>
+it&rsquo;s going to be applied with values like:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[{} [<span style="color: #61CE3C;">"CONNECTION"</span> K <span style="color: #919191;">AH</span> N <span style="color: #919191;">EH</span> K <span style="color: #919191;">SH</span> <span style="color: #919191;">AH</span> N ]]
+</pre>
+</div>
+
+
+<p>
+That&rsquo;s interesting because we have the [word &amp; rhyme]&#x2013;the way
+that destructuring works, rhyme will catch all of the phonemes
+into a list; it&rsquo;s almost like the CMU people could predict this
+kind of programming would occur using their dictionary. Or that
+Clojure was designed to deal with data structures like those in
+the CMU dictionary. Or that programmers should be creating data
+structures like those in the CMU dictionary that are easy to
+comprehend and manipulate as lists. Who knows?
+</p>
+
+<p>
+Then we say:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">assoc</span> map key val<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+Or here:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">assoc</span> {} <span style="color: #61CE3C;">"connection"</span> ...<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+And then a couple things happen on the way to passing THAT
+parameter.
+</p>
+
+<p>
+FIRST we reverse the rhyme (reverse rhyme) so
+</p>
+
+<pre class="example">
+K AH0 N EH1 K SH AH0 N
+</pre>
+
+
+<p>
+becomes
+</p>
+
+<pre class="example">
+AH0 SH K EH1 N AH0 K
+</pre>
+
+
+<p>
+SECOND we replace all the numbers with nothing (likely because we
+just don&rsquo;t need the data, can&rsquo;t remember why CMU uses numbers)
+</p>
+
+<p>
+we do that with a regular expression yielding
+</p>
+
+<pre class="example">
+N AH SH K EH N AH K
+</pre>
+
+
+<p>
+THIRD we run a mapv across that list of phonemes&#x2013;that is, apply
+to each element and return a vector. And what we are applying is
+the &ldquo;keyword&rdquo; function which turns a string to a clojure keyword so
+we end up with a structure like:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">{<span style="color: #61CE3C;">"connection"</span> [<span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:SH</span> <span style="color: #4c83ff;">:K</span> <span style="color: #4c83ff;">:EH</span> <span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:K</span>]}
+</pre>
+</div>
+
+
+<p>
+NOTE: I&rsquo;m not sure WHY we&rsquo;re converting to keywords but they are
+prettier in general and make for better keywords in maps, and I&rsquo;m
+assuming they actually are optimized as, like, keywords, so&#x2026;.
+</p>
+
+<p>
+Anyway, and then we repeat that (lazily, I guess, so in chunks of
+32 or whatever it is that Clojure does?) as needed until we&rsquo;ve
+slurped up the whole file into a big map or what I still think of
+as an associative array.  Aaaand now we have a variable that
+defines a function that when given&#x2013;
+</p>
+
+<p>
+Oh god, I SEE. I ACTUALLY SEE. This is a def instead of a
+function for a reason. It&rsquo;s a var that calls a function which
+returns a map, but in Clojure a map can operate as a function. So
+when I say:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span>word-to-rhyme <span style="color: #61CE3C;">"connection"</span><span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+I&rsquo;m causing the interpreter to read the entirety of the
+dictionary into a map, and assigning that map to &ldquo;word-to-rhyme&rdquo;
+and then because I&rsquo;m calling word-to-rhyme as the first item in a
+sexp, the interpreter evaluates it as a function and returns the
+phonemes that it has assoc&rsquo;d to that word.
+</p>
+
+<p>
+Clojure is kind of dense.
+</p>
+
+<p>
+So I&rsquo;m going to assume we&rsquo;re in similar territory here with this
+variable def.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">rhyme-to-word</span>
+  <span style="color: #666;">(</span><span style="color: #FF6400;">reduce</span>
+    <span style="color: #666;">(</span><span style="color: #FBDE2D;">fn</span> [m [word rhyme]]
+      <span style="color: #666;">(</span><span style="color: #FF6400;">assoc-in</span> m rhyme { <span style="color: #4c83ff;">:terminate</span> word }<span style="color: #666;">))</span>
+    {}
+    word-to-rhyme<span style="color: #666;">))</span>
+</pre>
+</div>
+
+
+<p>
+Aand we are, KIND OF. Hmm. So in this case we take the map (now
+just a map) from word-to-rhyme and do another reduce, except the
+structure we&rsquo;re building up is going to be a trie (?) so we&rsquo;re
+going:
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">assoc-in</span> {} [<span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:SH</span> <span style="color: #4c83ff;">:K</span> <span style="color: #4c83ff;">:EH</span> <span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:K</span>] { <span style="color: #4c83ff;">:terminate</span>
+<span style="color: #61CE3C;">"connection"</span> }<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+And as a result we&rsquo;re getting:
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">{<span style="color: #4c83ff;">:N</span> {<span style="color: #4c83ff;">:AH</span> {<span style="color: #4c83ff;">:SH</span> {<span style="color: #4c83ff;">:K</span> {<span style="color: #4c83ff;">:EH</span> {<span style="color: #4c83ff;">:N</span> {<span style="color: #4c83ff;">:AH</span> {<span style="color: #4c83ff;">:K</span> {<span style="color: #4c83ff;">:terminate</span>
+<span style="color: #61CE3C;">"connection"</span>}}}}}}}}}
+</pre>
+</div>
+
+
+<p>
+Great but that&rsquo;s one word. NOW Clojure hands that same map back
+to the reduce with ANOTHER word, and so on for thousands of
+words, building up a huge nested behemoth of a data structure.
+</p>
+
+<p>
+So we&rsquo;ve passed assoc-in the phonemes for &ldquo;connection&rdquo;; we can
+now pass it &ldquo;correction&rdquo; and they should be all jammed up in a
+really nice way&#x2026;
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">assoc-in</span> <span style="color: #666;">(</span><span style="color: #FF6400;">assoc-in</span> {} [<span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:SH</span> <span style="color: #4c83ff;">:K</span> <span style="color: #4c83ff;">:EH</span> <span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:K</span>] {
+  <span style="color: #4c83ff;">:terminate</span> <span style="color: #61CE3C;">"connection"</span> }<span style="color: #666;">)</span> [<span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:SH</span> <span style="color: #4c83ff;">:K</span> <span style="color: #4c83ff;">:EH</span> <span style="color: #4c83ff;">:ER</span> <span style="color: #4c83ff;">:K</span>]
+  {<span style="color: #4c83ff;">:terminate</span> <span style="color: #61CE3C;">"correction"</span>}<span style="color: #666;">)</span>
+</pre>
+</div>
+
+<p>
+Okay, yes we end up with something that will let us take one
+word, look up the phonemes (in reverse order) and look for
+similar phonemes, then map those back to the words. That&rsquo;s what
+we have here, no doubt. Looks like this:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">{<span style="color: #4c83ff;">:N</span> {<span style="color: #4c83ff;">:AH</span> {<span style="color: #4c83ff;">:SH</span> {<span style="color: #4c83ff;">:K</span> {<span style="color: #4c83ff;">:EH</span> {<span style="color: #4c83ff;">:ER</span> {<span style="color: #4c83ff;">:K</span> {<span style="color: #4c83ff;">:terminate</span> <span style="color: #61CE3C;">"correction"</span>}}, <span style="color: #4c83ff;">:N</span>
+{<span style="color: #4c83ff;">:AH</span> {<span style="color: #4c83ff;">:K</span> {<span style="color: #4c83ff;">:terminate</span> <span style="color: #61CE3C;">"connection"</span>}}}}}}}}}
+</pre>
+</div>
+
+
+<p>
+And since I can assoc-in I can get-in too and pull stuff out.
+</p>
+
+<p>
+Okay so on we go&#x2026;
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">defn</span> <span style="color: #ff1493;">get-deepest-values</span> [k]
+  <span style="color: #666;">(</span><span style="color: #FBDE2D;">if</span> <span style="color: #666;">(</span><span style="color: #FF6400;">string?</span> k<span style="color: #666;">)</span> [k] <span style="color: #666;">(</span><span style="color: #FF6400;">mapcat</span> get-deepest-values <span style="color: #666;">(</span><span style="color: #FF6400;">vals</span> k<span style="color: #666;">))))</span>
+</pre>
+</div>
+
+
+<p>
+What the hell is this? What is it for? OH GOD.
+</p>
+
+<p>
+So here we&rsquo;re looking for strings inside a nest of keywords&#x2013;that
+makes sense. What is mapcat? Clojure docs:
+</p>
+
+<div class="blockquote">
+<p>
+&ldquo;Returns the result of applying concat to the result of
+applying map to f and colls. Thus function f should return a
+collection.&rdquo;
+</p>
+
+</div>
+
+<p>
+Great, thanks Clojure docs. You&rsquo;re my bosom robot pal.
+</p>
+
+<p>
+What it means I think is that you&rsquo;re going to give this function
+a bundle of stuff and it&rsquo;ll do something to each piece of stuff
+(MAP!&#x2026;) and then smush everything together into one nice list
+(&#x2026;!CAT).  So we&rsquo;re saying given a nested associated structure
+like the one we just made, pull out all the values &#x2026;
+</p>
+
+<p>
+Wait hold on&#x2013;let&rsquo;s look at how it&rsquo;s actually called.
+</p>
+
+<p>
+Okay this is the big mooooment
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span>get-deepest-values
+  <span style="color: #666;">(</span><span style="color: #FF6400;">get-in</span> rhyme-to-word
+    <span style="color: #666;">(</span><span style="color: #FF6400;">take</span> 5
+      <span style="color: #666;">(</span>word-to-rhyme <span style="color: #61CE3C;">"erection"</span><span style="color: #666;">))))</span>
+</pre>
+</div>
+
+
+<p>
+(Erection, eh Jack?)
+</p>
+
+<p>
+And this gives a result thus:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #61CE3C;">"erection"</span> <span style="color: #61CE3C;">"direction"</span> <span style="color: #61CE3C;">"correction"</span> <span style="color: #61CE3C;">"collection"</span> <span style="color: #61CE3C;">"inflection"</span>
+<span style="color: #61CE3C;">"preelection"</span> <span style="color: #61CE3C;">"circumspection"</span> <span style="color: #61CE3C;">"introspection"</span> <span style="color: #61CE3C;">"imperfection"</span>
+<span style="color: #61CE3C;">"perfection"</span> <span style="color: #61CE3C;">"midsection"</span> <span style="color: #61CE3C;">"transection"</span> <span style="color: #61CE3C;">"connection"</span>
+<span style="color: #61CE3C;">"protection"</span><span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+But sometimes it&rsquo;s all too last-first for me, so let&rsquo;s do that
+using this guy &ldquo;-&gt;&gt;"&#x2013;which is a macro that allows you to put
+things in normal human-person order instead of LISPbot order,
+passing the results of the first function call as the last
+parameter to the next function and on and on.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">-&gt;&gt;</span>
+
+  <span style="color: #666;">(</span>word-to-rhyme <span style="color: #61CE3C;">"erection"</span><span style="color: #666;">)</span>
+  <span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">gives us [:N :AH :SH :K :EH :R :IH]</span>
+
+  <span style="color: #666;">(</span><span style="color: #FF6400;">take</span> 5<span style="color: #666;">)</span>
+  <span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">gives us (:N :AH :SH :K :EH)--i.e. five phonemes, or the "ection" part of the rhyme.</span>
+
+  <span style="color: #666;">(</span><span style="color: #FF6400;">get-in</span> rhyme-to-word<span style="color: #666;">)</span>
+  <span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">so we're calling (get-in rhyme-to-word '(:N :AH :SH :K :EH))</span>
+  <span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">and we get this result:</span>
+  <span style="color: #8B8989; font-style: italic;">;;</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">{:R {:IH {:terminate "erection"}}, :ER {:D {:terminate</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">"direction"}, :K {:terminate "correction"}}, :L {:AH {:K</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">{:terminate "collection"}}, :F {:N {:IH {:terminate</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">"inflection"}}}, :IH {:IY {:R {:P {:terminate</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">"preelection"}}}}}, :P {:S {:M {:AH {:K {:ER {:S {:terminate</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">"circumspection"}}}}}, :AH {:R {:T {:N {:IH {:terminate</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">"introspection"}}}}}}}, :F {:ER {:P {:M {:IH {:terminate</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">"imperfection"}}, :terminate "perfection"}}}, :S {:D {:IH</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">{:M {:terminate "midsection"}}}, :N {:AE {:R {:T {:terminate</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">"transection"}}}}}, :N {:AH {:K {:terminate "connection"}}},</span>
+  <span style="color: #8B8989; font-style: italic;">;;    </span><span style="color: #8B8989; font-style: italic;">:T {:AH {:R {:P {:terminate "protection"}}}}}</span>
+  <span style="color: #8B8989; font-style: italic;">;;</span>
+  <span style="color: #8B8989; font-style: italic;">;; </span><span style="color: #8B8989; font-style: italic;">Okay so THAT's what we're passing in when we call....</span>
+
+  <span style="color: #666;">(</span>get-deepest-values<span style="color: #666;">))</span>
+</pre>
+</div>
+
+
+<p>
+So it turns out that all that
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">defn</span> <span style="color: #ff1493;">get-deepest-values</span> [k]
+ <span style="color: #666;">(</span><span style="color: #FBDE2D;">if</span> <span style="color: #666;">(</span><span style="color: #FF6400;">string?</span> k<span style="color: #666;">)</span> [k] <span style="color: #666;">(</span><span style="color: #FF6400;">mapcat</span> get-deepest-values <span style="color: #666;">(</span><span style="color: #FF6400;">vals</span> k<span style="color: #666;">))))</span>
+</pre>
+</div>
+
+
+<p>
+does is say: Hey pal, get the values from the key/value pairs
+that are in a map called &ldquo;k.&rdquo; If you hit any value at all that is
+a string, return it and you&rsquo;re done for that part. OTHERWISE keep
+mapping over the values and run this function again on each one
+of them (until you hit a string). And however nested things are
+is fine and all, but please return a nice flat list of results
+(that&rsquo;s why it&rsquo;s mapcat instead of cat&rdquo;).
+</p>
+
+<p>
+So it&rsquo;s like you gave it a Russian nested doll, except this is
+LISP so it&rsquo;s a Siamese Russian nested doll where the number of
+conjoined twins varies from nil to infinity. And it keeps looking
+inside the first twin&rsquo;s dolls until it finds a piece of paper
+with a word or two on it. Then it throws away all the dolls
+around those words. And it does the same to the other twin. Maybe
+the first twin is three dolls deep. Maybe the second twin is four
+dolls deep. Doesn&rsquo;t even matter. Get-deepest-values just digs
+right in there.
+</p>
+
+<p>
+Of all of them, these tiny recursive functions are the hardest to
+write and understand.
+</p>
+
+<p>
+Anyway, that&rsquo;s how it works, I think.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Application: Byronic Bigrams</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+Okay so we have a nice rhyming dictionary. But Jack insists on
+complicating things and drops in this fun-fest.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">byron-bigrams</span> [[<span style="color: #61CE3C;">"soul"</span> <span style="color: #61CE3C;">"wears"</span>] [<span style="color: #61CE3C;">"light"</span> <span style="color: #61CE3C;">"of"</span>] [<span style="color: #61CE3C;">"moon"</span> <span style="color: #61CE3C;">"be"</span>]
+                     [<span style="color: #61CE3C;">"outwears"</span> <span style="color: #61CE3C;">"its"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"soul"</span>]
+                     [<span style="color: #61CE3C;">"night"</span> <span style="color: #61CE3C;">"though"</span>] [<span style="color: #61CE3C;">"heart"</span> <span style="color: #61CE3C;">"must"</span>]
+                     [<span style="color: #61CE3C;">"out"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"be"</span> <span style="color: #61CE3C;">"still"</span>] [<span style="color: #61CE3C;">"love"</span> <span style="color: #61CE3C;">"itself"</span>]
+                     [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"light"</span>] [<span style="color: #61CE3C;">"pause"</span> <span style="color: #61CE3C;">"to"</span>] [<span style="color: #61CE3C;">"yet"</span> <span style="color: #61CE3C;">"we"</span>]
+                     [<span style="color: #61CE3C;">"for"</span> <span style="color: #61CE3C;">"loving"</span>] [<span style="color: #61CE3C;">"day"</span> <span style="color: #61CE3C;">"returns"</span>]
+                     [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"night"</span>] [<span style="color: #61CE3C;">"too"</span> <span style="color: #61CE3C;">"soon"</span>] [<span style="color: #61CE3C;">"for"</span> <span style="color: #61CE3C;">"the"</span>]
+                     [<span style="color: #61CE3C;">"a"</span> <span style="color: #61CE3C;">"roving"</span>] [<span style="color: #61CE3C;">"will"</span> <span style="color: #61CE3C;">"go"</span>] [<span style="color: #61CE3C;">"loving"</span> <span style="color: #61CE3C;">"and"</span>]
+                     [<span style="color: #61CE3C;">"sword"</span> <span style="color: #61CE3C;">"outwears"</span>] [<span style="color: #61CE3C;">"to"</span> <span style="color: #61CE3C;">"breathe"</span>]
+                     [<span style="color: #61CE3C;">"breast"</span> <span style="color: #61CE3C;">"and"</span>] [<span style="color: #61CE3C;">"still"</span> <span style="color: #61CE3C;">"as"</span>] [<span style="color: #61CE3C;">"so"</span> <span style="color: #61CE3C;">"late"</span>]
+                     [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"day"</span>] [<span style="color: #61CE3C;">"was"</span> <span style="color: #61CE3C;">"made"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"sword"</span>]
+                     [<span style="color: #61CE3C;">"more"</span> <span style="color: #61CE3C;">"a"</span>] [<span style="color: #61CE3C;">"soon"</span> <span style="color: #61CE3C;">"yet"</span>] [<span style="color: #61CE3C;">"must"</span> <span style="color: #61CE3C;">"pause"</span>]
+                     [<span style="color: #61CE3C;">"roving"</span> <span style="color: #61CE3C;">"by"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"moon"</span>]
+                     [<span style="color: #61CE3C;">"returns"</span> <span style="color: #61CE3C;">"too"</span>] [<span style="color: #61CE3C;">"itself"</span> <span style="color: #61CE3C;">"have"</span>]
+                     [<span style="color: #61CE3C;">"night"</span> <span style="color: #61CE3C;">"was"</span>] [<span style="color: #61CE3C;">"into"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"we"</span> <span style="color: #61CE3C;">"will"</span>]
+                     [<span style="color: #61CE3C;">"breathe"</span> <span style="color: #61CE3C;">"and"</span>] [<span style="color: #61CE3C;">"sheath"</span> <span style="color: #61CE3C;">"and"</span>] [<span style="color: #61CE3C;">"so"</span> <span style="color: #61CE3C;">"we"</span>]
+                     [<span style="color: #61CE3C;">"roving"</span> <span style="color: #61CE3C;">"so"</span>] [<span style="color: #61CE3C;">"no"</span> <span style="color: #61CE3C;">"more"</span>] [<span style="color: #61CE3C;">"made"</span> <span style="color: #61CE3C;">"for"</span>]
+                     [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"heart"</span>] [<span style="color: #61CE3C;">"though"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"go"</span> <span style="color: #61CE3C;">"no"</span>]
+                     [<span style="color: #61CE3C;">"late"</span> <span style="color: #61CE3C;">"into"</span>] [<span style="color: #61CE3C;">"wears"</span> <span style="color: #61CE3C;">"out"</span>] [<span style="color: #61CE3C;">"and"</span> <span style="color: #61CE3C;">"the"</span>]
+                     [<span style="color: #61CE3C;">"of"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"by"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"and"</span> <span style="color: #61CE3C;">"love"</span>]
+                     [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"breast"</span>] [<span style="color: #61CE3C;">"heart"</span> <span style="color: #61CE3C;">"be"</span>] [<span style="color: #61CE3C;">"as"</span> <span style="color: #61CE3C;">"loving"</span>]
+                     [<span style="color: #61CE3C;">"its"</span> <span style="color: #61CE3C;">"sheath"</span>]]<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">group-by</span> <span style="color: #666;">(</span><span style="color: #FF6400;">comp</span> <span style="color: #666;">(</span><span style="color: #FF6400;">partial</span> take 2<span style="color: #666;">)</span> word-to-rhyme last<span style="color: #666;">)</span> byron-bigrams<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+It&rsquo;s a PUZZLER. I just want to be done now, friends. I just want
+to not be recursing. But let&rsquo;s chill and take it bit by bit. The
+dude has 30 years of reasons for writing code this way.
+</p>
+
+<p>
+First, the data above is a set of bigrams (subsequent word pairs)
+from Lord Byron&rsquo;s &ldquo;We&rsquo;ll go no more a-roving.&rdquo;
+</p>
+
+<p>
+<a href="http://www.bartleby.com/101/599.html">http://www.bartleby.com/101/599.html</a>
+</p>
+
+<p>
+I was able to figure that out by the fact that the variable is
+named &ldquo;byron&rdquo; plus &ldquo;bigrams&rdquo; and included the word &ldquo;roving.&rdquo; This
+part at least makes sense, thanks to Google.
+</p>
+
+<p>
+So let&rsquo;s put that into a var.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">roving-poem</span> <span style="color: #61CE3C;">"SO, we'll go no more a-roving</span>
+<span style="color: #61CE3C;">So late into the night,</span>
+<span style="color: #61CE3C;">Though the heart be still as loving,</span>
+<span style="color: #61CE3C;">And the moon be still as bright.</span>
+
+<span style="color: #61CE3C;">For the sword outwears its sheath,</span>
+<span style="color: #61CE3C;">And the soul wears out the breast,</span>
+<span style="color: #61CE3C;">And the heart must pause to breathe,</span>
+<span style="color: #61CE3C;">And love itself have rest.</span>
+
+<span style="color: #61CE3C;">Though the night was made for loving,</span>
+<span style="color: #61CE3C;">And the day returns too soon, </span>
+<span style="color: #61CE3C;">Yet we'll go no more a-roving</span>
+<span style="color: #61CE3C;">By the light of the moon."</span><span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+Now Jack already has his bigrams in here. But I want to make my
+own damned bigrams. I tried a few different ways of making
+bigrams, here&rsquo;s one approach, with ten failures left out but a
+few failures left in.
+</p>
+
+<p>
+Let&rsquo;s break up roving-poem into lowercase words using a regular
+expression and the lower-case function.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">some-words</span> 
+  <span style="color: #666;">(</span><span style="color: #FF6400;">map</span> string/lower-case
+    <span style="color: #666;">(</span>string/split roving-poem #<span style="color: #61CE3C;">"[\s\.\-,]+"</span><span style="color: #666;">)))</span>
+</pre>
+</div>
+
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">take</span> 10 some-words<span style="color: #666;">)</span>
+=&gt; <span style="color: #666;">(</span><span style="color: #61CE3C;">"so"</span> <span style="color: #61CE3C;">"we'll"</span> <span style="color: #61CE3C;">"go"</span> <span style="color: #61CE3C;">"no"</span> <span style="color: #61CE3C;">"more"</span> <span style="color: #61CE3C;">"a"</span> <span style="color: #61CE3C;">"roving"</span> <span style="color: #61CE3C;">"so"</span> <span style="color: #61CE3C;">"late"</span> <span style="color: #61CE3C;">"into"</span><span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+I&rsquo;m really excited to have a function called &ldquo;bigrammer&rdquo; so let&rsquo;s
+go all the way and call it big-rammer. I started like this:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">defn</span> <span style="color: #ff1493;">big-rammer0</span> [words]
+  <span style="color: #666;">(</span><span style="color: #FBDE2D;">if</span> <span style="color: #666;">(</span><span style="color: #FF6400;">&lt;</span> <span style="color: #666;">(</span><span style="color: #FF6400;">count</span> words<span style="color: #666;">)</span> 2<span style="color: #666;">)</span>
+    <span style="color: #666;">(</span><span style="color: #FF6400;">vec</span> <span style="color: #666;">(</span><span style="color: #FF6400;">first</span> words<span style="color: #666;">)</span> <span style="color: #666;">(</span><span style="color: #FF6400;">second</span> words<span style="color: #666;">)</span>
+      <span style="color: #666;">(</span>big-rammer0 rest words<span style="color: #666;">))))</span>
+</pre>
+</div>
+
+<p>
+But when I went
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span>big-rammer0 some-words<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+It returns nil, which suuuucks. Nil is the opposite of what I
+want (not really, nil is not the opposite of things, nil is a
+mysterious nothing.) Then I realized that the (if &#x2026;)  is
+probably in the wrong place, which always happens and got to:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">defn</span> <span style="color: #ff1493;">big-rammer1</span> [words]
+  <span style="color: #666;">(</span><span style="color: #FF6400;">list</span> <span style="color: #666;">(</span><span style="color: #FF6400;">first</span> words<span style="color: #666;">)</span> <span style="color: #666;">(</span><span style="color: #FF6400;">second</span> words<span style="color: #666;">)</span>
+    <span style="color: #666;">(</span><span style="color: #FBDE2D;">if</span> <span style="color: #666;">(</span><span style="color: #FF6400;">&gt;</span> <span style="color: #666;">(</span><span style="color: #FF6400;">count</span> words<span style="color: #666;">)</span> 2<span style="color: #666;">)</span>
+      <span style="color: #666;">(</span>big-rammer1 <span style="color: #666;">(</span><span style="color: #FF6400;">rest</span> words<span style="color: #666;">)))))</span>
+
+<span style="color: #666;">(</span>big-rammer1 some-words<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+And that returned
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #61CE3C;">"so"</span> <span style="color: #61CE3C;">"we'll"</span> <span style="color: #666;">(</span><span style="color: #61CE3C;">"we'll"</span> <span style="color: #61CE3C;">"go"</span> <span style="color: #666;">(</span><span style="color: #61CE3C;">"go"</span> <span style="color: #61CE3C;">"no"</span> ...[snipped a bunch]
+nil<span style="color: #666;">)))))))))))))))))))))))))))))))</span>
+<span style="color: #666;">)))))))))))))))))))))))))))))))))))))))))))))</span>
+</pre>
+</div>
+
+
+<p>
+Which is just way too many parentheses, even for Clojure.
+</p>
+
+<p>
+Now I know there is stuff like (flatten) and (filter identity)
+that would get me a flat list without the nil on the end. Nils
+are kind of the bane of my existence in Clojure, they keep
+showing up and I never know what to do with them. But that&rsquo;s not
+what I want; I want to get every two items and put them together
+just so without a whole lot of shenanigans to flatten the
+list. This has to be possible.
+</p>
+
+<p>
+Let&rsquo;s just try the recursive model a little bit more.
+</p>
+
+<p>
+Okay, I got it, maybe.
+</p>
+
+<p>
+Here&rsquo;s how I&rsquo;d describe the following function in english: Given
+a buncha words (&ldquo;cat&rdquo; &ldquo;dog&rdquo; &ldquo;ferret&rdquo; &ldquo;weasel&rdquo;), do two things:
+make a list with all but the first of those words (&ldquo;dog&rdquo; &ldquo;ferret&rdquo;
+&ldquo;weasel&rdquo;) and also a tiny list with the first and second word
+(&ldquo;cat &ldquo;dog&rdquo;). Then go ahead and call the EXACT SAME function on
+the first list with all but the first of the words&#x2014;and KEEP
+calling that bad boy until it&rsquo;s down to two items. Then call it
+quits (which will return nil because there&rsquo;s nothing to
+return). Every time you made that call you make those tiny lists
+with two items, right? Well once you&rsquo;ve exhausted the longer list
+you take all of them and conj[oin] them into one list of lists.
+</p>
+
+<p>
+Actually this part of LISP drives me crazy, I never quite GET IT,
+so let&rsquo;s break it down in exhaustive detail.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">defn</span> <span style="color: #ff1493;">big-rammer2</span> [words]
+  <span style="color: #666;">(</span><span style="color: #FBDE2D;">if</span> <span style="color: #666;">(</span><span style="color: #FF6400;">&gt;</span> <span style="color: #666;">(</span><span style="color: #FF6400;">count</span> words<span style="color: #666;">)</span> 1<span style="color: #666;">)</span>
+    <span style="color: #666;">(</span><span style="color: #FF6400;">vec</span> <span style="color: #666;">(</span><span style="color: #FF6400;">conj</span> <span style="color: #666;">(</span>big-rammer2 <span style="color: #666;">(</span><span style="color: #FF6400;">rest</span> words<span style="color: #666;">))</span>
+           <span style="color: #666;">(</span><span style="color: #FF6400;">vec</span> <span style="color: #666;">(</span><span style="color: #FF6400;">list</span> <span style="color: #666;">(</span><span style="color: #FF6400;">first</span> words<span style="color: #666;">)</span> <span style="color: #666;">(</span><span style="color: #FF6400;">second</span> words<span style="color: #666;">)))))))</span>
+
+<span style="color: #666;">(</span>big-rammer2 '<span style="color: #666;">(</span><span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span><span style="color: #666;">))</span>
+</pre>
+</div>
+
+
+<p>
+This produces
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[[<span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span>] [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>]]
+</pre>
+</div>
+
+
+<p>
+Which is what we want. And man does it look LISPy, especially the
+part where it goes ")))))))"
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span>big-rammer2 some-words<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+gives us a nice vector too, because
+we wrapped our lists in (vec). So now things are starting to look
+like byron-bigrams up top. We&rsquo;re getting somewhere.
+</p>
+
+<p>
+Okay let&rsquo;s run it piece by piece, interpolating the growing list
+of vectors.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span>big-rammer2 '<span style="color: #666;">(</span><span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span><span style="color: #666;">))</span>
+</pre>
+</div>
+
+
+<p>
+PASS 1
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">vec</span> <span style="color: #666;">(</span><span style="color: #FF6400;">conj</span>
+  <span style="color: #666;">(</span>big-rammer2
+    '<span style="color: #666;">(</span><span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span><span style="color: #666;">))</span>
+       [<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>]<span style="color: #666;">))</span>
+</pre>
+</div>
+
+<p>
+Result: 
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[[<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>] [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span>]]
+</pre>
+</div>
+
+
+<p>
+PASS 2
+</p>
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">vec</span> <span style="color: #666;">(</span><span style="color: #FF6400;">conj</span>
+  <span style="color: #666;">(</span>big-rammer2
+    '<span style="color: #666;">(</span><span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span><span style="color: #666;">))</span>
+       [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>]<span style="color: #666;">))</span>
+</pre>
+</div>
+
+
+<p>
+Result: 
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[[<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>] [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span>]]
+</pre>
+</div>
+
+
+<p>
+PASS 3
+</p>
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">vec</span> <span style="color: #666;">(</span><span style="color: #FF6400;">conj</span>
+  <span style="color: #666;">(</span>big-rammer2
+    '<span style="color: #666;">(</span><span style="color: #61CE3C;">"weasel"</span><span style="color: #666;">))</span>
+       [<span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span>] [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>]<span style="color: #666;">))</span>
+</pre>
+</div>
+
+<p>
+Result:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[[<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>] [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span>]]
+</pre>
+</div>
+
+
+<p>
+PASS 4
+</p>
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">vec</span> <span style="color: #666;">(</span><span style="color: #FF6400;">conj</span> nil [<span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span>] [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>]<span style="color: #666;">))</span>
+</pre>
+</div>
+
+<p>
+Result: 
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[[<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>] [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span>]]
+</pre>
+</div>
+
+
+<p>
+The interesting thing is that if you DON&rsquo;T have that nil it goes
+pear-shaped. So if I run:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">vec</span> <span style="color: #666;">(</span><span style="color: #FF6400;">conj</span> [<span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span>] [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>]<span style="color: #666;">))</span>
+</pre>
+</div>
+
+
+<p>
+I get:
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[<span style="color: #61CE3C;">"ferret"</span> <span style="color: #61CE3C;">"weasel"</span> [<span style="color: #61CE3C;">"dog"</span> <span style="color: #61CE3C;">"ferret"</span>] [<span style="color: #61CE3C;">"cat"</span> <span style="color: #61CE3C;">"dog"</span>]]
+</pre>
+</div>
+
+
+<p>
+Tooo nested. Now, what the hell, let&rsquo;s go a little deeper on
+conj. Because conjoining does all manner of stuff. Let&rsquo;s refer to
+the <a href="http://clojuredocs.org/clojure_core/clojure.core/conj">docs</a>:
+</p>
+
+<div class="blockquote">
+<p>
+conj[oin]. Returns a new collection with the xs &lsquo;added&rsquo;. (conj
+nil item) returns (item). The &lsquo;addition&rsquo; may happen at different
+&lsquo;places&rsquo; depending on the concrete type.
+</p>
+
+</div>
+
+<p>
+ARGH. It&rsquo;s like biting into a brick. So what are we really doing?
+</p>
+
+<p>
+Let&rsquo;s break this down:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">conj</span> [<span style="color: #4c83ff;">:foo</span>] [<span style="color: #4c83ff;">:bar</span>]<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+Makes
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure">[<span style="color: #4c83ff;">:foo</span> [<span style="color: #4c83ff;">:bar</span>]]
+</pre>
+</div>
+
+
+<p>
+Whereas
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">conj</span> nil [<span style="color: #4c83ff;">:foo</span>] [<span style="color: #4c83ff;">:bar</span>]<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+Makes
+</p>
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span>[<span style="color: #4c83ff;">:bar</span>] [<span style="color: #4c83ff;">:foo</span>]<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+Because it is CONJOINING bar <i>into</i> foo. Whereas the docs, with
+their inimitable clarity, say:
+</p>
+
+<div class="blockquote">
+<p>
+&ldquo;(conj nil item) returns (item)"
+</p>
+
+</div>
+
+<p>
+So in theory&#x2026;
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">=</span> <span style="color: #666;">(</span><span style="color: #FF6400;">list</span> [<span style="color: #61CE3C;">"a"</span>] [<span style="color: #61CE3C;">"b"</span>]<span style="color: #666;">)</span> <span style="color: #666;">(</span><span style="color: #FF6400;">conj</span> nil [<span style="color: #61CE3C;">"b"</span>] [<span style="color: #61CE3C;">"a"</span>]<span style="color: #666;">))</span>
+</pre>
+</div>
+
+
+<p>
+And indeed that <i>is</i> true. Because conjing [&ldquo;b&rdquo;] onto nil produces
+([&ldquo;b&rdquo;]), and then conjing [&ldquo;a&rdquo;] onto that puts it into the list that
+contains [&ldquo;b&rdquo;].
+</p>
+
+<p>
+So this is a <i>big discovery</i> for me. You process items and throw
+them at the end of a recursive function and then conjoin them when
+it&rsquo;s all done. Now the nil value produced when the function is
+called for the last time becomes the FIRST item that conjoin
+sees&#x2013;and so conjoin goes ahead and puts everything that follows
+into a list. But it&rsquo;s <i>as if expressing everything in sequences were
+some sort of insane sickly goal.</i> Which sure, I get that, I&rsquo;m
+programming in a LISP, but it is weird when you see it up
+close. Like when you see your screen is made of pixels.
+</p>
+
+<p>
+I.e. the thing I&rsquo;m trying to get to/comprehend is that in Clojure
+it&rsquo;s not just that there are a lot of lists (seqs); it&rsquo;s that
+lists inform every aspect of the language and if you don&rsquo;t see a
+list, or some relationship that can be expressed as a set of
+lists, you should keep looking. If you don&rsquo;t see/feel a sequence,
+you&rsquo;re not looking hard enough. And this kind of makes sense
+because computers at their essence just put stuff in boxes and
+take stuff out of boxes in predetermined sequences. So this is a
+funny thing about LISP because it&rsquo;s a suuuuuper-crazy abstraction
+and maps to lambda calculus, but it&rsquo;s simultaneously weirdly
+close to the metal, which is why it must appeal to a certain kind
+of nerd. I find this really comforting but I can see why other
+people would not. I think this is what Jack is trying to tell me!
+(It is; I actually checked with him to be sure.)
+</p>
+
+<p>
+Anyway all of this is moot because I also went and searched for a
+bigram-maker and found one in incanter, which is a general
+purpose math/stats library for Clojure.
+</p>
+
+<p>
+And what that makes clear is that we can use the partition
+function&#x2013;here called as (partition 2 1) which goes ahead and takes
+a list of two things, fast-forwards by one thing, takes the next two
+things, fast forwards by one thing, etc. So partition is a built-in
+that does what our recursive function does above but I <i>regret
+nothing</i>. So we can get all of our words at once by going:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FBDE2D;">def</span> <span style="color: #ff1493;">words</span> 
+  <span style="color: #666;">(</span><span style="color: #FF6400;">map</span> #<span style="color: #666;">(</span><span style="color: #FF6400;">vec</span> %<span style="color: #666;">)</span> <span style="color: #666;">(</span><span style="color: #FF6400;">partition</span> 2 1
+                  <span style="color: #666;">(</span><span style="color: #FF6400;">map</span> string/lower-case
+                    <span style="color: #666;">(</span>string/split roving-poem #<span style="color: #61CE3C;">"[\s\.\-,]+"</span><span style="color: #666;">)))))</span>
+</pre>
+</div>
+
+<p>
+(Note: Jack points out that &ldquo;#(vec %)" could just be &ldquo;vec&rdquo;, but
+everyone makes this mistake so I&rsquo;m leaving it in.)
+</p>
+
+<p>
+I.e. partition into bigrams and and then map those into vectors
+(#() is shorthand for defining a function with an argument &ldquo;%&rdquo;)
+and you&rsquo;ll end up with a structure basically like the one Jack
+has in his original (there are a few tiny differences; his
+doesn&rsquo;t preserve apostrophes, but we&rsquo;re close enough now.) So I
+feel okay about that. I get how to make bigrams both via map and
+via a recursive funtion. Now let&rsquo;s get to the end&#x2026;.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">group-by</span> <span style="color: #666;">(</span><span style="color: #FF6400;">comp</span> <span style="color: #666;">(</span><span style="color: #FF6400;">partial</span> take 2<span style="color: #666;">)</span> word-to-rhyme last<span style="color: #666;">)</span> byron-bigrams<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+Okay we&rsquo;re almost home.
+</p>
+
+<p>
+&ldquo;(comp&#x2026;)" means we&rsquo;re going to make a function out of other
+functions.
+</p>
+
+<p>
+&ldquo;(partial&#x2026;)" means we&rsquo;re making a function with partial
+arguments that can be called and evaluated with just the
+&ldquo;missing&rdquo; arguments provided.
+</p>
+
+<p>
+So&#x2026;
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">=</span> <span style="color: #666;">((</span><span style="color: #FF6400;">partial</span> take 2<span style="color: #666;">)</span> '<span style="color: #666;">(</span>1 2 3 4<span style="color: #666;">))</span>
+ '<span style="color: #666;">(</span>1 2<span style="color: #666;">))</span>
+=&gt; true
+</pre>
+</div>
+
+
+<p>
+That works fine but is of course most handy when you go:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">=</span> 
+ <span style="color: #666;">(</span><span style="color: #FF6400;">map</span> <span style="color: #666;">(</span><span style="color: #FF6400;">partial</span> take 2<span style="color: #666;">)</span> [[1 2 3] [4 5 6] [7 8 9]]<span style="color: #666;">)</span>
+  '<span style="color: #666;">((</span>1 2<span style="color: #666;">)</span> <span style="color: #666;">(</span>4 5<span style="color: #666;">)</span> <span style="color: #666;">(</span>7 8<span style="color: #666;">)))</span>
+=&gt; true
+</pre>
+</div>
+
+
+<p>
+This jibes with everything I&rsquo;ve learned about LISP, which is that
+LISP is about lots of tiny functions that can all live together
+in beautiful harmony, except on Usenet.
+</p>
+
+<p>
+Anyway if we execute the above with just the (first) of the
+byron-bigrams&#x2026;
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">((</span><span style="color: #FF6400;">comp</span> <span style="color: #666;">(</span><span style="color: #FF6400;">partial</span> take 2<span style="color: #666;">)</span> word-to-rhyme last<span style="color: #666;">)</span> <span style="color: #666;">(</span><span style="color: #FF6400;">first</span>
+byron-bigrams<span style="color: #666;">))</span>
+=&gt; <span style="color: #666;">(</span><span style="color: #4c83ff;">:Z</span> <span style="color: #4c83ff;">:R</span><span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+That is the same as:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">take</span> 2 <span style="color: #666;">(</span>word-to-rhyme <span style="color: #666;">(</span><span style="color: #FF6400;">last</span> <span style="color: #666;">(</span><span style="color: #FF6400;">first</span> byron-bigrams<span style="color: #666;">))))</span>
+=&gt; <span style="color: #666;">(</span><span style="color: #4c83ff;">:Z</span> <span style="color: #4c83ff;">:R</span><span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+And so
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">=</span> <span style="color: #666;">((</span><span style="color: #FF6400;">comp</span> <span style="color: #666;">(</span><span style="color: #FF6400;">partial</span> take 2<span style="color: #666;">)</span> word-to-rhyme last<span style="color: #666;">)</span>
+<span style="color: #666;">(</span><span style="color: #FF6400;">first</span> byron-bigrams<span style="color: #666;">))</span>
+ <span style="color: #666;">(</span><span style="color: #FF6400;">take</span> 2 <span style="color: #666;">(</span>word-to-rhyme <span style="color: #666;">(</span><span style="color: #FF6400;">last</span> <span style="color: #666;">(</span><span style="color: #FF6400;">first</span> byron-bigrams<span style="color: #666;">)))))</span>
+</pre>
+</div>
+
+
+<p>
+There&rsquo;s a lot of chitchat about functional composition out there in
+LISPLand but all we&rsquo;re REALLY saying is &ldquo;smush together all of
+these functions so that they can be run over and over with data
+of the sort that you&rsquo;ll find in byron-bigrams.&rdquo; Like, the
+composition part should be easy&#x2013;and here it is&#x2013;the hard part is
+in making composable functions.
+</p>
+
+<p>
+Anyway, group-by is pretty familiar; just about every language
+has it. It runs a function over a list and the result is the key
+in a map, and the value that produced that key is added to a
+vector on the right hand side. (PASS THE VECTOR TO THE RIGHT HAND
+SIDE PASS THE VECTOR TO THE RIGHT HAND SIDE). Anyway. So when we
+run this we&rsquo;re going to get a map of all the bigrams where the
+last two phonemes of the last word are exactly identical. Thus
+we&rsquo;ll get all the bigrams that rhyme, at least in terms of two
+phonemes meaning a &ldquo;rhyme.&rdquo;
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-clojure"><span style="color: #666;">(</span><span style="color: #FF6400;">group-by</span> <span style="color: #666;">(</span><span style="color: #FF6400;">comp</span> <span style="color: #666;">(</span><span style="color: #FF6400;">partial</span> take 2<span style="color: #666;">)</span> word-to-rhyme last<span style="color: #666;">)</span> byron-bigrams<span style="color: #666;">)</span>
+</pre>
+</div>
+
+
+<p>
+And we do! Here&rsquo;s what comes out:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-clojure">{<span style="color: #666;">(</span><span style="color: #4c83ff;">:L</span> <span style="color: #4c83ff;">:IH</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"be"</span> <span style="color: #61CE3C;">"still"</span>] [<span style="color: #61CE3C;">"we"</span> <span style="color: #61CE3C;">"will"</span>]], <span style="color: #666;">()</span> [[<span style="color: #61CE3C;">"sword"</span> <span style="color: #61CE3C;">"outwears"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:N</span> <span style="color: #4c83ff;">:UW</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"too"</span> <span style="color: #61CE3C;">"soon"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"moon"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:NG</span> <span style="color: #4c83ff;">:IH</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"for"</span> <span style="color: #61CE3C;">"loving"</span>] [<span style="color: #61CE3C;">"a"</span> <span style="color: #61CE3C;">"roving"</span>] [<span style="color: #61CE3C;">"as"</span> <span style="color: #61CE3C;">"loving"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:OW</span> <span style="color: #4c83ff;">:S</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"roving"</span> <span style="color: #61CE3C;">"so"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:OW</span> <span style="color: #4c83ff;">:DH</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"night"</span> <span style="color: #61CE3C;">"though"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:IY</span> <span style="color: #4c83ff;">:W</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"yet"</span> <span style="color: #61CE3C;">"we"</span>] [<span style="color: #61CE3C;">"so"</span> <span style="color: #61CE3C;">"we"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:T</span> <span style="color: #4c83ff;">:S</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"heart"</span> <span style="color: #61CE3C;">"must"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"breast"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:D</span> <span style="color: #4c83ff;">:EY</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"was"</span> <span style="color: #61CE3C;">"made"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:T</span> <span style="color: #4c83ff;">:AY</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"light"</span>] [<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"night"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:T</span> <span style="color: #4c83ff;">:R</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"heart"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:OW</span> <span style="color: #4c83ff;">:N</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"go"</span> <span style="color: #61CE3C;">"no"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:T</span> <span style="color: #4c83ff;">:EH</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"soon"</span> <span style="color: #61CE3C;">"yet"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:EY</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"more"</span> <span style="color: #61CE3C;">"a"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:Z</span> <span style="color: #4c83ff;">:R</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"soul"</span> <span style="color: #61CE3C;">"wears"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:R</span> <span style="color: #4c83ff;">:AO</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"no"</span> <span style="color: #61CE3C;">"more"</span>][<span style="color: #61CE3C;">"made"</span> <span style="color: #61CE3C;">"for"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:Z</span> <span style="color: #4c83ff;">:AA</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"night"</span> <span style="color: #61CE3C;">"was"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:AY</span> <span style="color: #4c83ff;">:B</span><span style="color: #666;">)</span> <span style="color: #61CE3C;">"roving"</span> <span style="color: #61CE3C;">"by"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:V</span> <span style="color: #4c83ff;">:AH</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"light"</span> <span style="color: #61CE3C;">"of"</span>] [<span style="color: #61CE3C;">"and"</span> <span style="color: #61CE3C;">"love"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:Z</span> <span style="color: #4c83ff;">:N</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"day"</span> <span style="color: #61CE3C;">"returns"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:V</span> <span style="color: #4c83ff;">:AE</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"itself"</span> <span style="color: #61CE3C;">"have"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:D</span> <span style="color: #4c83ff;">:R</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"sword"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:Z</span> <span style="color: #4c83ff;">:AE</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"still"</span> <span style="color: #61CE3C;">"as"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:OW</span> <span style="color: #4c83ff;">:G</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"will"</span> <span style="color: #61CE3C;">"go"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:TH</span> <span style="color: #4c83ff;">:IY</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"its"</span> <span style="color: #61CE3C;">"sheath"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:F</span> <span style="color: #4c83ff;">:L</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"love"</span> <span style="color: #61CE3C;">"itself"</span>]], 
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:D</span> <span style="color: #4c83ff;">:N</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"loving"</span> <span style="color: #61CE3C;">"and"</span>] [<span style="color: #61CE3C;">"breast"</span> <span style="color: #61CE3C;">"and"</span>] [<span style="color: #61CE3C;">"breathe"</span> <span style="color: #61CE3C;">"and"</span>] [<span style="color: #61CE3C;">"sheath"</span> <span style="color: #61CE3C;">"and"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:Z</span> <span style="color: #4c83ff;">:AO</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"must"</span> <span style="color: #61CE3C;">"pause"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:T</span> <span style="color: #4c83ff;">:AW</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"wears"</span> <span style="color: #61CE3C;">"out"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:IY</span> <span style="color: #4c83ff;">:B</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"moon"</span> <span style="color: #61CE3C;">"be"</span>][<span style="color: #61CE3C;">"heart"</span> <span style="color: #61CE3C;">"be"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:DH</span> <span style="color: #4c83ff;">:IY</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"to"</span> <span style="color: #61CE3C;">"breathe"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:UW</span> <span style="color: #4c83ff;">:T</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"pause"</span> <span style="color: #61CE3C;">"to"</span>] [<span style="color: #61CE3C;">"returns"</span> <span style="color: #61CE3C;">"too"</span>] [<span style="color: #61CE3C;">"late"</span> <span style="color: #61CE3C;">"into"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:T</span> <span style="color: #4c83ff;">:EY</span><span style="color: #666;">)</span> <span style="color: #61CE3C;">"so"</span> <span style="color: #61CE3C;">"late"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:AH</span> <span style="color: #4c83ff;">:DH</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"out"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"for"</span> <span style="color: #61CE3C;">"the"</span>][<span style="color: #61CE3C;">"into"</span> <span style="color: #61CE3C;">"the"</span>][<span style="color: #61CE3C;">"though"</span> <span style="color: #61CE3C;">"the"</span>]
+  [<span style="color: #61CE3C;">"and"</span> <span style="color: #61CE3C;">"the"</span>][<span style="color: #61CE3C;">"of"</span> <span style="color: #61CE3C;">"the"</span>] [<span style="color: #61CE3C;">"by"</span> <span style="color: #61CE3C;">"the"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:L</span> <span style="color: #4c83ff;">:OW</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"soul"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:S</span> <span style="color: #4c83ff;">:T</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"outwears"</span> <span style="color: #61CE3C;">"its"</span>]],
+<span style="color: #666;">(</span><span style="color: #4c83ff;">:EY</span> <span style="color: #4c83ff;">:D</span><span style="color: #666;">)</span> [[<span style="color: #61CE3C;">"the"</span> <span style="color: #61CE3C;">"day"</span>]]}
+</pre>
+</div>
+
+
+<p>
+So there we are. Jack points out something important via chat
+discussion on Google Jabberchat, which I&rsquo;m adding here.
+</p>
+</div>
+
+<div id="outline-container-sec-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Jack annotates</h3>
+<div class="outline-text-3" id="text-5-1">
+<div class="blockquote">
+<p>
+The lesson of the group-by is that if you parameterize your grouping
+function with another function, you only need to write group-by
+once&#x2014;rather than having a group-by for each of your data types.
+</p>
+
+<p>
+The sub-lessons are that composition and partial evaluation let you
+improvise the function you use to do that parameterization, with
+basically no ceremony.
+</p>
+
+<p>
+Last thing on parameterizing functions with functions:
+that’s also how the calculus works
+</p>
+
+<p>
+<span class="underline"><span class="underline">END JACK TRANSMISSION</span></span>
+</p>
+
+</div>
+
+<p>
+&ldquo;&#x2026;that&rsquo;s also how the calculus works&#x2026;&rdquo; I mean come on. That&rsquo;s
+fun. No one says that about web frameworks. They&rsquo;re all like &ldquo;it
+compiles SASS now!&rdquo;
+</p>
+
+<p>
+So basically we&rsquo;re done (but don&rsquo;t worry I&rsquo;ve added a giant essay
+to this because what is wrong with me.) Here are some possible
+next steps:
+</p>
+
+<ol class="org-ol">
+<li>Care about syllables
+</li>
+<li>Look for words that are phonetic opposites of one another.
+</li>
+<li>Wrap a web service around it.
+</li>
+<li>Relax.
+</li>
+</ol>
+
+<p>
+Here are some notes and observations from this exercise.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> What I Learned</h2>
+<div class="outline-text-2" id="text-6">
+</div><div id="outline-container-sec-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Perlis!</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+The Alan Perlis maxim about having 100 functions operate on one
+data structure keeps coming back to my head over and over. It&rsquo;s
+like that quote is the data structure and my brain keeps
+operating on it in 100 different ways.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Keep Like with Like</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+If things need to get processed, just do it inside the
+function. Don&rsquo;t make tons of little functions like, say,
+&ldquo;filter-to-lowercase&rdquo; or the like, as I would in Python hanging
+off the class; just do it right there in the function. At some
+level this fits well with my overall life/programming/editorial/
+writing strategy of &ldquo;keep like with like,&rdquo; which is the one true
+principle of just about everything, but it requires a lot of
+familiarity and comfort with the programming model&#x2013;especially
+the right-to-left depth-first model of LISPs&#x2013;to really be
+proficient in this kind of coding, to know where to break things
+off into multiple functions.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-6-3" class="outline-3">
+<h3 id="sec-6-3"><span class="section-number-3">6.3</span> It Really Is All Lists</h3>
+<div class="outline-text-3" id="text-6-3">
+<p>
+Things WANT to be lists, and Clojure wants them to be
+lists. Destructuring is not about dealing with arbitrary numbers
+of arguments. It&rsquo;s about pulling out a few named arguments, then
+throwing the rest into a sequence, so that you can quickly take
+something dumb&#x2013;a list of strings representing words and
+phonemes&#x2013;and make that list a little smarter. And repeat. Add
+smarts, process the rest, add smarts, process the rest. The ethos
+seems to be: Take dumb stuff, add smarts, repeat.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-6-4" class="outline-3">
+<h3 id="sec-6-4"><span class="section-number-3">6.4</span> Data types</h3>
+<div class="outline-text-3" id="text-6-4">
+<p>
+Getting things into the right data type really helps to simplify
+your life. If you take the phonemes and make them keywords, going
+from &ldquo;EK&rdquo; to :EK, then you can pull results out of a nested trie
+structure and recursively look through it for the strings, which
+are your payload, and ignore the keywords. My regular pattern is
+to create really big associative arrays from any data source&#x2013;to
+reinvent XML or JSON in-memory, basically, with lots of nested
+arrays and so forth; the idea here seems to be that the best
+possible data structure is a nice plain list without a lot of
+fooling around and it&rsquo;s okay to assume the code knows about the
+data once they meet up; the data doesn&rsquo;t have to tell the code
+what every field means. Again&#x2013;my roots are document processing,
+where that&rsquo;s actually a good thing. We take more for granted on
+planet Clojure.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Conclusion</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+You know, there&rsquo;s a strong, strong urge to never actually finish
+anything when I&rsquo;m in Clojure. This is because the &ldquo;finished&rdquo;
+state is less relevant when you&rsquo;re evaluating code live inside a
+text editor and looking at (and then parsing) the results back
+into the same live coding environment. The whole idea of
+&ldquo;finished&rdquo; seems kind of hilarious, like you are some sort of God
+looking down on humans who are still maintaining state in
+variables and sort of squinting and sighing, and since nothing is
+ever REALLY done, why pretend otherwise?
+</p>
+
+<p>
+I&rsquo;m not using a REPL. I&rsquo;m just evaluating, evaluating, evaluating
+all day long. It&rsquo;s very easy to get separatist about this
+environment. Meanwhile everyone else has shipped their websites
+and gone out for dinner to celebrate their acquihiresition while
+I&rsquo;m sitting home at 2AM trying to understand the spiritual
+essence of &ldquo;conj.&rdquo;
+</p>
+
+<p>
+EXCEPT I know in my little heart that I&rsquo;m a better programmer
+after two or three weeks of dabbling in Clojure. But I don&rsquo;t have
+a TON to show, and not as much as I&rsquo;d have with Python, for
+certain. And I do have a product to ship. That said, huge amount
+of opaque code (especially Emacs LISP) is far more open to me
+than it used to be, and readable. And I&rsquo;ve had an awful lot of
+&ldquo;oh wow actually that&rsquo;s very easy if you just use (partition)"
+moments reading the standard library code. Lots of bits of
+programmer culture&#x2013;Jamie Zawinski rants, &ldquo;Worse is Better,&rdquo;
+Haskell passion&#x2013;make more sense.
+</p>
+
+<p>
+So this is probably a net win. What Clojure is teaching me is to
+calm down, look at the function signature in my Emacs modeline,
+check the standard docs (control-C d), and then write a function
+and rewrite it until it doesn&rsquo;t explode and does what I want. And
+you just sort of keep on doing it. And if it comes together
+(maybe the partial Wikipedia parser I&rsquo;m writing could be useful)
+you bundle it up and release it to Github.
+</p>
+
+<p>
+Stuff like that recursive big-rammer2 function used to be really
+hard for me to wrap my head around, and it&rsquo;s not any more&#x2013;the
+magic has gone out of it. It&rsquo;s nice to see magic destroyed. One
+thing about magic is that when it gets bundled up 
+but is still hidden from view (i.e. in frameworks) it leads to 
+sameness of product. Every wizard has the same spells.
+</p>
+
+<p>
+When you look at what people are doing so far, there doesn&rsquo;t seem
+to be a prototypical Clojure app out in the world. People seem to
+be focused on the language, and on gluing together things from other 
+languages so they can be used here. It&rsquo;ll be
+interesting to see what emerges. There are some web frameworks, but 
+some minimal web app layers like Ring that make more sense to me right
+now. Frameworks are great but they sure do lead to a
+lot of apps that look and feel and&#x2026;taste? alike. I&rsquo;m not saying
+things should be hard&#x2013;I&rsquo;m just saying that we create things with
+our tools, and thus our tools have consequences.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Paul Ford &lt;ford@ftrain.com&gt;, based on code by Jack Rusher &lt;jack@rusher.com&gt;</p>
+<p class="date">Created: 2014-01-28 Tue 15:18</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.50.1 (<a href="http://orgmode.org">Org</a> mode 8.2.5c)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
