@@ -3,7 +3,7 @@
 
 [[http://upload.wikimedia.org/wikipedia/commons/7/74/Pieter_Bruegel_the_Elder-_Big_Fish_Eat_Little_Fish.JPG]]
 
-Diagram: LISP Internals
+/Diagram: LISP Internals/
 
 ** What Is this document?
 So let's say we want to create a rhyming dictionary in Clojure. Not
@@ -149,9 +149,9 @@ The format of the dictionary is such:
 
 i.e. something like
 
-#+BEGIN_BLOCKQUOTE
+#+BEGIN_QUOTE
     WORD[SPACE]PHONEME_1[SPACE]PHONEME_2[SPACE]...PHONEME_N[NEWLINE]
-#+END_BLOCKQUOTE
+#+END_QUOTE
 
 
 So we (slurp) in the file, split the lines by newlines, and then
