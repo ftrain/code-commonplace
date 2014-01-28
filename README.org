@@ -1,0 +1,7 @@
+#+TITLE: Code Commonplace Book
+
+An easily forkable commonplace book for heavily-annotated
+interesting code of all kinds, notes, and so forth, from the
+enormous digital world in which we find ourselves.
+
+Eventually a table of contents will go here.
