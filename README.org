@@ -15,3 +15,8 @@ awesome.
 
 Of course org-mode limits things to emacs. But it has great HTML
 export (and thus should work for ebooks) and LaTeX support.
+
+* TODO TODOS
+- [ ] Figure out how to do a TOC and whether to keep renderings in the source.
+- [ ] Maybe this is its own website? But then it's a project.
+- [ ] Ride bikes.
