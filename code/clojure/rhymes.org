@@ -248,11 +248,11 @@ it a billion times instead of 100.
 The super hot LISPY action in there is
 
 
-#+BEGIN_BLOCKQUOTE
+#+BEGIN_QUOTE
     (reduce function = [that function] 
                  val = [an empty map {}]
                 coll = [rhyme-txt, our list of vectors])
-#+END_BLOCKQUOTE
+#+END_QUOTE
 
 Clojure docs are kind of a bear. For reduce, they say "If val is
 supplied, returns the result of applying f to val and the first
@@ -444,11 +444,11 @@ What the hell is this? What is it for? OH GOD.
 So here we're looking for strings inside a nest of keywords--that
 makes sense. What is mapcat? Clojure docs:
 
-#+BEGIN_BLOCKQUOTE
+#+BEGIN_QUOTE
     "Returns the result of applying concat to the result of
     applying map to f and colls. Thus function f should return a
     collection."
-#+END_BLOCKQUOTE
+#+END_QUOTE
 
 Great, thanks Clojure docs. You're my bosom robot pal.
 
@@ -829,11 +829,11 @@ Tooo nested. Now, what the hell, let's go a little deeper on
 conj. Because conjoining does all manner of stuff. Let's refer to
 the [[http://clojuredocs.org/clojure_core/clojure.core/conj][docs]]:
 
-#+BEGIN_BLOCKQUOTE
+#+BEGIN_QUOTE
    conj[oin]. Returns a new collection with the xs 'added'. (conj
    nil item) returns (item). The 'addition' may happen at different
    'places' depending on the concrete type.
-#+END_BLOCKQUOTE
+#+END_QUOTE
 
 ARGH. It's like biting into a brick. So what are we really doing?
 
@@ -867,9 +867,9 @@ Makes
 Because it is CONJOINING bar /into/ foo. Whereas the docs, with
 their inimitable clarity, say:
 
-#+BEGIN_BLOCKQUOTE
+#+BEGIN_QUOTE
     "(conj nil item) returns (item)"
-#+END_BLOCKQUOTE
+#+END_QUOTE
 
 So in theory...
 
@@ -1069,7 +1069,7 @@ discussion on Google Jabberchat, which I'm adding here.
 
 *** Jack annotates
 
-#+BEGIN_BLOCKQUOTE
+#+BEGIN_QUOTE
 The lesson of the group-by is that if you parameterize your grouping
 function with another function, you only need to write group-by
 once---rather than having a group-by for each of your data types.
@@ -1082,7 +1082,7 @@ Last thing on parameterizing functions with functions:
 that’s also how the calculus works
 
 __END JACK TRANSMISSION__
-#+END_BLOCKQUOTE
+#+END_QUOTE
 
 "...that's also how the calculus works..." I mean come on. That's
 fun. No one says that about web frameworks. They're all like "it
