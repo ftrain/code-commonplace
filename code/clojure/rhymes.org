@@ -160,12 +160,15 @@ split on space.
 Gotta love (slurp); one thing it took me a while to figure out
 the other day is that slurp starts looking for files at the top
 level of the Clojure project. Where the source files are means
-nothing to Clojure (because they means nothing to the JVM); it's
+nothing to Clojure (because they mean nothing to the JVM); it's
 the project that sets the path. Just putting this here to save
 someone else the 20 minutes.
 
 Anyway now that we've done that we can say:
-(take 3 (drop 1010 rhyme-txt))
+
+#+BEGIN_SRC clojure
+    (take 3 (drop 1010 rhyme-txt))
+#+END_SRC
 
 (Okay so we're not getting rid of comments in the dictionary
 source or anything when we do this, it's fast-and-dirty. So for
